@@ -8,18 +8,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Uraian extends Model
 {
     protected $fillable = [
-    'pelatihan_id',
-    'urutan',
-    'uraian_kegiatan',
-    'tanggal',
-    'progres',
-    'pic',
-    'link',
-    'keterangan',
-];
+        'pelatihan_id',
+        'urutan',
+        'uraian_kegiatan',
+        'tanggal',
+        'progres',
+        'pic',
+        'link',
+        'keterangan',
+    ];
 
-public function pelatihan()
-{
-    return $this->belongsTo(Pelatihan::class);
-}
+    public function pelatihan(): BelongsTo
+    {
+        return $this->belongsTo(Pelatihan::class);
+    }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
                   ->constrained()
                   ->cascadeOnDelete();
 
-            $table->integer('urutan');
+           $table->unsignedInteger('urutan');
 
             $table->text('uraian_kegiatan');
 

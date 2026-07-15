@@ -8,16 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Pelatihan extends Model
 {
     protected $fillable = [
-    'nama_pelatihan',
-    'tahapan',
-    'kegiatan',
-    'hari',
-    'tanggal',
-    'tempat',
-];
+        'nama_pelatihan',
+        'tahapan',
+        'kegiatan',
+        'hari',
+        'tanggal',
+        'tempat',
+    ];
 
-public function uraians()
-{
-    return $this->hasMany(Uraian::class);
-}
+    public function uraians(): HasMany
+    {
+        return $this->hasMany(Uraian::class)->orderBy('urutan');
+    }
 }

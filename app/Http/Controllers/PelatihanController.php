@@ -9,31 +9,24 @@ class PelatihanController extends Controller
 {
     public function index()
     {
-        $pelatihans = Pelatihan::latest()->get();
+        $pelatihans = Pelatihan::with('uraians')
+            ->latest()
+            ->get();
+
+        foreach ($pelatihans as $pelatihan) {
+
+            $total = $pelatihan->uraians->count();
+
+            $selesai = $pelatihan->uraians
+                ->where('progres', 'selesai')
+                ->count();
+
+            $pelatihan->persen = $total > 0
+                ? round(($selesai / $total) * 100)
+                : 0;
+        }
 
         return view('pelatihans.index', compact('pelatihans'));
-    }
-
-    public function create()
-    {
-        return view('pelatihans.create');
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama_pelatihan' => 'required',
-            'tahapan' => 'required',
-            'kegiatan' => 'required',
-            'hari' => 'required',
-            'tanggal' => 'required|date',
-            'tempat' => 'required',
-        ]);
-
-        Pelatihan::create($request->all());
-
-        return redirect()->route('pelatihans.index')
-            ->with('success', 'Pelatihan berhasil ditambahkan.');
     }
 
     public function show(Pelatihan $pelatihan)
@@ -41,35 +34,5 @@ class PelatihanController extends Controller
         $pelatihan->load('uraians');
 
         return view('pelatihans.show', compact('pelatihan'));
-    }
-
-    public function edit(Pelatihan $pelatihan)
-    {
-        return view('pelatihans.edit', compact('pelatihan'));
-    }
-
-    public function update(Request $request, Pelatihan $pelatihan)
-    {
-        $request->validate([
-            'nama_pelatihan' => 'required',
-            'tahapan' => 'required',
-            'kegiatan' => 'required',
-            'hari' => 'required',
-            'tanggal' => 'required|date',
-            'tempat' => 'required',
-        ]);
-
-        $pelatihan->update($request->all());
-
-        return redirect()->route('pelatihans.index')
-            ->with('success', 'Pelatihan berhasil diubah.');
-    }
-
-    public function destroy(Pelatihan $pelatihan)
-    {
-        $pelatihan->delete();
-
-        return redirect()->route('pelatihans.index')
-            ->with('success', 'Pelatihan berhasil dihapus.');
     }
 }

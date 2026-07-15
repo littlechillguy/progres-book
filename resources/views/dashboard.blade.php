@@ -204,7 +204,7 @@
 
                         <td class="px-5">
 
-                            <a href="{{ route('pelatihans.show',$pelatihan->id) }}"
+                            <a href="{{ route('pelatihans.show',$pelatihan) }}"
                                 class="font-semibold text-indigo-600 hover:underline">
 
                                 {{ $pelatihan->nama_pelatihan }}
