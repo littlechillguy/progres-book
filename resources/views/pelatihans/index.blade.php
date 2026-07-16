@@ -26,7 +26,7 @@
 
         @auth
             @if(auth()->user()->role == 'admin')
-                <a href="{{ route('pelatihans.create') }}"
+                <a href="{{ route('admin.pelatihans.create') }}"
                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-semibold transition">
                     <i class="fa-solid fa-plus mr-2"></i>
                     Tambah Pelatihan
@@ -179,45 +179,45 @@
 
                 </td>
 
-                @auth
-                    @if(auth()->user()->role == 'admin')
+               @auth
+    @if(auth()->user()->role == 'admin')
 
-                    <td class="text-center">
+    <td class="text-center">
 
-                        <div class="flex justify-center gap-3">
+        <div class="flex justify-center gap-3">
 
-                            <a href="{{ route('pelatihans.edit', $pelatihan->id) }}"
-                                class="text-amber-500 hover:text-amber-700"
-                                title="Edit">
+            <a href="{{ route('admin.pelatihans.edit', $pelatihan->id) }}"
+                class="text-amber-500 hover:text-amber-700"
+                title="Edit">
 
-                                <i class="fa-solid fa-pen-to-square"></i>
+                <i class="fa-solid fa-pen-to-square"></i>
 
-                            </a>
+            </a>
 
-                            <form
-                                action="{{ route('pelatihans.destroy', $pelatihan->id) }}"
-                                method="POST"
-                                onsubmit="return confirm('Yakin ingin menghapus pelatihan ini?')">
+            <form
+                action="{{ route('admin.pelatihans.destroy', $pelatihan->id) }}"
+                method="POST"
+                onsubmit="return confirm('Yakin ingin menghapus pelatihan ini?')">
 
-                                @csrf
-                                @method('DELETE')
+                @csrf
+                @method('DELETE')
 
-                                <button
-                                    class="text-red-600 hover:text-red-800"
-                                    title="Hapus">
+                <button
+                    class="text-red-600 hover:text-red-800"
+                    title="Hapus">
 
-                                    <i class="fa-solid fa-trash"></i>
+                    <i class="fa-solid fa-trash"></i>
 
-                                </button>
+                </button>
 
-                            </form>
+            </form>
 
-                        </div>
+        </div>
 
-                    </td>
+    </td>
 
-                    @endif
-                @endauth
+    @endif
+@endauth
 
             </tr>
 

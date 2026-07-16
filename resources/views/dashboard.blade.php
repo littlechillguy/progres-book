@@ -24,7 +24,7 @@
         @auth
             @if(auth()->user()->role == 'admin')
 
-                <a href="{{ route('pelatihans.create') }}"
+                <a href="{{ route('admin.pelatihans.create') }}"
                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold shadow">
 
                     <i class="fa-solid fa-plus mr-2"></i>

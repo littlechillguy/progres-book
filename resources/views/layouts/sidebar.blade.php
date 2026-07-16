@@ -36,6 +36,7 @@
 
         <div class="space-y-2">
 
+            {{-- Dashboard --}}
             <a href="{{ route('dashboard') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl transition
                 {{ request()->routeIs('dashboard')
@@ -50,11 +51,36 @@
 
             </a>
 
-            <a href="{{ route('pelatihans.index') }}"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-                {{ request()->routeIs('pelatihans.*')
-                    ? 'bg-indigo-600 text-white shadow'
-                    : 'hover:bg-slate-800 hover:text-white' }}">
+            {{-- Data Pelatihan --}}
+            @auth
+
+                @if(auth()->user()->role == 'admin')
+
+                    <a href="{{ route('admin.pelatihans.index') }}"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition
+                        {{ request()->routeIs('admin.pelatihans.*')
+                            ? 'bg-indigo-600 text-white shadow'
+                            : 'hover:bg-slate-800 hover:text-white' }}">
+
+                @else
+
+                    <a href="{{ route('pelatihans.index') }}"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition
+                        {{ request()->routeIs('pelatihans.*')
+                            ? 'bg-indigo-600 text-white shadow'
+                            : 'hover:bg-slate-800 hover:text-white' }}">
+
+                @endif
+
+            @else
+
+                <a href="{{ route('pelatihans.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('pelatihans.*')
+                        ? 'bg-indigo-600 text-white shadow'
+                        : 'hover:bg-slate-800 hover:text-white' }}">
+
+            @endauth
 
                 <i class="fa-solid fa-folder-open w-5"></i>
 
@@ -73,67 +99,67 @@
 
         @auth
 
-        <div class="bg-slate-800 rounded-xl p-4">
+            <div class="bg-slate-800 rounded-xl p-4">
 
-            <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center gap-3 mb-4">
 
-                <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                    <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
 
-                    {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+                        {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-white font-semibold text-sm">
+
+                            {{ auth()->user()->name }}
+
+                        </p>
+
+                        <p class="text-xs text-slate-400">
+
+                            Administrator
+
+                        </p>
+
+                    </div>
 
                 </div>
 
-                <div>
+                <form action="{{ route('logout') }}" method="POST">
 
-                    <p class="text-white font-semibold text-sm">
+                    @csrf
 
-                        {{ auth()->user()->name }}
+                    <button
+                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">
 
-                    </p>
+                        <i class="fa-solid fa-right-from-bracket mr-2"></i>
 
-                    <p class="text-xs text-slate-400">
+                        Logout
 
-                        Administrator
+                    </button>
 
-                    </p>
-
-                </div>
+                </form>
 
             </div>
 
-            <form action="{{ route('logout') }}" method="POST">
-
-                @csrf
-
-                <button
-                    class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">
-
-                    <i class="fa-solid fa-right-from-bracket mr-2"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
         @else
 
-        <a href="{{ route('login') }}"
-            class="block bg-indigo-600 hover:bg-indigo-700 text-center text-white py-3 rounded-xl transition">
+            <a href="{{ route('login') }}"
+                class="block bg-indigo-600 hover:bg-indigo-700 text-center text-white py-3 rounded-xl transition">
 
-            <i class="fa-solid fa-right-to-bracket mr-2"></i>
+                <i class="fa-solid fa-right-to-bracket mr-2"></i>
 
-            Login Admin
+                Login Admin
 
-        </a>
+            </a>
 
-        <p class="text-center text-xs text-slate-500 mt-3">
+            <p class="text-center text-xs text-slate-500 mt-3">
 
-            Login hanya untuk administrator.
+                Login hanya untuk administrator.
 
-        </p>
+            </p>
 
         @endauth
 

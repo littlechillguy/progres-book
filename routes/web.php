@@ -11,69 +11,99 @@ use App\Http\Controllers\ProfileController;
 | Public Routes
 |--------------------------------------------------------------------------
 |
-| Semua orang dapat mengakses halaman ini tanpa login.
+| Dapat diakses oleh semua pengunjung.
 |
 */
 
 Route::get('/', [DashboardController::class, 'index'])
     ->name('dashboard');
 
-Route::resource('pelatihans', PelatihanController::class)
-    ->only([
-        'index',
-        'show'
-    ]);
+Route::get('/pelatihans', [PelatihanController::class, 'index'])
+    ->name('pelatihans.index');
+
+Route::get('/pelatihans/{pelatihan}', [PelatihanController::class, 'show'])
+    ->name('pelatihans.show');
+
 
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
 |--------------------------------------------------------------------------
 |
-| Hanya administrator yang sudah login.
+| Hanya dapat diakses oleh administrator yang login.
 |
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | CRUD Pelatihan
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard Admin
+        |--------------------------------------------------------------------------
+        */
 
-    Route::resource('pelatihans', PelatihanController::class)
-        ->except([
-            'index',
-            'show'
-        ]);
+        Route::get('/', function () {
+            return redirect()->route('admin.pelatihans.index');
+        })->name('dashboard');
 
-    /*
-    |--------------------------------------------------------------------------
-    | CRUD Uraian
-    |--------------------------------------------------------------------------
-    */
 
-    Route::resource('uraians', UraianController::class);
+        /*
+        |--------------------------------------------------------------------------
+        | CRUD Pelatihan
+        |--------------------------------------------------------------------------
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Profile
-    |--------------------------------------------------------------------------
-    */
+        Route::get('/pelatihans', [PelatihanController::class, 'adminIndex'])
+            ->name('pelatihans.index');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
+        Route::get('/pelatihans/create', [PelatihanController::class, 'create'])
+            ->name('pelatihans.create');
 
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+        Route::post('/pelatihans', [PelatihanController::class, 'store'])
+            ->name('pelatihans.store');
 
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
-});
+        Route::get('/pelatihans/{pelatihan}/edit', [PelatihanController::class, 'edit'])
+            ->name('pelatihans.edit');
+
+        Route::put('/pelatihans/{pelatihan}', [PelatihanController::class, 'update'])
+            ->name('pelatihans.update');
+
+        Route::delete('/pelatihans/{pelatihan}', [PelatihanController::class, 'destroy'])
+            ->name('pelatihans.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CRUD Uraian
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource('uraians', UraianController::class);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Profile
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/profile', [ProfileController::class, 'edit'])
+            ->name('profile.edit');
+
+        Route::patch('/profile', [ProfileController::class, 'update'])
+            ->name('profile.update');
+
+        Route::delete('/profile', [ProfileController::class, 'destroy'])
+            ->name('profile.destroy');
+    });
+
 
 /*
 |--------------------------------------------------------------------------
-| Authentication (Laravel Breeze)
+| Authentication
 |--------------------------------------------------------------------------
 */
 
