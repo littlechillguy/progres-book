@@ -27,7 +27,7 @@ return new class extends Migration
                 'selesai'
             ])->default('belum');
 
-            $table->string('pic');
+            $table->string('pic')->nullable();
 
             $table->text('link')->nullable();
 

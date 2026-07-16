@@ -50,49 +50,47 @@
 
         <form method="GET" action="{{ route('pelatihans.index') }}">
 
-            <div class="grid md:grid-cols-3 gap-4">
+    <div class="grid md:grid-cols-4 gap-4">
 
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Cari nama pelatihan..."
-                    class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Cari nama pelatihan..."
+            class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 
-                <select
-                    name="tahapan"
-                    class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <select
+            name="tahapan"
+            class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 
-                    <option value="">Semua Tahapan</option>
+            <option value="">Semua Tahapan</option>
+            <option value="Persiapan" {{ request('tahapan') == 'Persiapan' ? 'selected' : '' }}>Persiapan</option>
+            <option value="Pelaksanaan" {{ request('tahapan') == 'Pelaksanaan' ? 'selected' : '' }}>Pelaksanaan</option>
+            <option value="Evaluasi" {{ request('tahapan') == 'Evaluasi' ? 'selected' : '' }}>Evaluasi</option>
 
-                    <option value="Persiapan"
-                        {{ request('tahapan')=='Persiapan' ? 'selected' : '' }}>
-                        Persiapan
-                    </option>
+        </select>
 
-                    <option value="Pelaksanaan"
-                        {{ request('tahapan')=='Pelaksanaan' ? 'selected' : '' }}>
-                        Pelaksanaan
-                    </option>
+        <button
+            type="submit"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition">
 
-                    <option value="Evaluasi"
-                        {{ request('tahapan')=='Evaluasi' ? 'selected' : '' }}>
-                        Evaluasi
-                    </option>
+            <i class="fa-solid fa-search mr-2"></i>
+            Cari
 
-                </select>
+        </button>
 
-                <button
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition">
+        <a
+            href="{{ route('pelatihans.index') }}"
+            class="bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold transition flex items-center justify-center">
 
-                    <i class="fa-solid fa-search mr-2"></i>
-                    Cari
+            <i class="fa-solid fa-rotate-left mr-2"></i>
+            Reset
 
-                </button>
+        </a>
 
-            </div>
+    </div>
 
-        </form>
+</form>
 
     </div>
 

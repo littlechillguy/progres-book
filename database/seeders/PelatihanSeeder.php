@@ -5,78 +5,50 @@ namespace Database\Seeders;
 use App\Models\Pelatihan;
 use App\Models\Uraian;
 use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 
 class PelatihanSeeder extends Seeder
 {
     public function run(): void
     {
-        $data = [
-
-            [
-                'nama_pelatihan' => 'Pelatihan Laravel Fundamental',
-                'tahapan' => 'Pelaksanaan',
-                'kegiatan' => 'Pelatihan Backend',
-                'hari' => 'Senin',
-                'tanggal' => '2026-01-12',
-                'tempat' => 'Jakarta'
-            ],
-
-            [
-                'nama_pelatihan' => 'Pelatihan Cyber Security',
-                'tahapan' => 'Persiapan',
-                'kegiatan' => 'Workshop Keamanan Siber',
-                'hari' => 'Selasa',
-                'tanggal' => '2026-02-20',
-                'tempat' => 'Bandung'
-            ],
-
-            [
-                'nama_pelatihan' => 'Pelatihan UI/UX',
-                'tahapan' => 'Evaluasi',
-                'kegiatan' => 'Pelatihan Desain',
-                'hari' => 'Kamis',
-                'tanggal' => '2026-03-18',
-                'tempat' => 'Yogyakarta'
-            ],
-
+        $pelatihans = [
+            ['nama_pelatihan'=>'Pelatihan Laravel Fundamental','tahapan'=>'Pelaksanaan','kegiatan'=>'Pelatihan Backend Laravel','hari'=>'Senin','tanggal'=>'2026-01-12','tempat'=>'Jakarta'],
+            ['nama_pelatihan'=>'Workshop Cyber Security','tahapan'=>'Persiapan','kegiatan'=>'Pelatihan Keamanan Siber','hari'=>'Selasa','tanggal'=>'2026-02-20','tempat'=>'Bandung'],
+            ['nama_pelatihan'=>'Pelatihan UI/UX Design','tahapan'=>'Evaluasi','kegiatan'=>'Desain Antarmuka Aplikasi','hari'=>'Kamis','tanggal'=>'2026-03-18','tempat'=>'Yogyakarta'],
+            ['nama_pelatihan'=>'Pelatihan Cloud Computing','tahapan'=>'Pelaksanaan','kegiatan'=>'Implementasi Cloud','hari'=>'Rabu','tanggal'=>'2026-04-10','tempat'=>'Surabaya'],
+            ['nama_pelatihan'=>'Pelatihan Digital Forensik','tahapan'=>'Persiapan','kegiatan'=>'Investigasi Digital','hari'=>'Jumat','tanggal'=>'2026-05-15','tempat'=>'Medan'],
         ];
 
-        foreach ($data as $item) {
+        $templateUraian = [
+            'Penyusunan TOR','Penyusunan Jadwal','Penyusunan Anggaran','Penyusunan Modul','Koordinasi Internal','Koordinasi Narasumber','Pengiriman Undangan','Registrasi Peserta','Persiapan Ruangan','Persiapan Peralatan','Briefing Panitia','Pembukaan Acara','Penyampaian Materi 1','Penyampaian Materi 2','Diskusi Kelompok','Praktik Mandiri','Pendampingan Peserta','Post Test','Evaluasi Peserta','Penyusunan Laporan'
+        ];
 
-            $pelatihan = Pelatihan::create($item);
+        $pics = ['BPSDM','Panitia','Sekretariat','Tim IT','Narasumber','Instruktur','Admin','Ketua Panitia'];
 
-            Uraian::create([
-                'pelatihan_id' => $pelatihan->id,
-                'urutan' => 1,
-                'uraian_kegiatan' => 'Persiapan',
-                'tanggal' => $item['tanggal'],
-                'progres' => 'selesai',
-                'pic' => 'BPSDM',
-                'link' => 'https://google.com',
-                'keterangan' => 'Persiapan selesai'
-            ]);
+        foreach ($pelatihans as $index => $data) {
+            $pelatihan = Pelatihan::create($data);
+            $baseDate = Carbon::parse($data['tanggal'])->subDays(20);
 
-            Uraian::create([
-                'pelatihan_id' => $pelatihan->id,
-                'urutan' => 2,
-                'uraian_kegiatan' => 'Pelaksanaan',
-                'tanggal' => $item['tanggal'],
-                'progres' => 'on progress',
-                'pic' => 'BPSDM',
-                'link' => null,
-                'keterangan' => 'Sedang berlangsung'
-            ]);
+            foreach ($templateUraian as $i => $uraian) {
+                if ($i < 10) {
+                    $status = 'selesai';
+                } elseif ($i < 15) {
+                    $status = 'on progress';
+                } else {
+                    $status = 'belum';
+                }
 
-            Uraian::create([
-                'pelatihan_id' => $pelatihan->id,
-                'urutan' => 3,
-                'uraian_kegiatan' => 'Evaluasi',
-                'tanggal' => $item['tanggal'],
-                'progres' => 'belum',
-                'pic' => 'BPSDM',
-                'link' => null,
-                'keterangan' => 'Belum dimulai'
-            ]);
+                Uraian::create([
+                    'pelatihan_id' => $pelatihan->id,
+                    'urutan' => $i + 1,
+                    'uraian_kegiatan' => $uraian . ' - ' . $pelatihan->nama_pelatihan,
+                    'tanggal' => $baseDate->copy()->addDays($i)->format('Y-m-d'),
+                    'progres' => $status,
+                    'pic' => $pics[($i + $index) % count($pics)],
+                    'link' => $i % 4 == 0 ? 'https://drive.google.com/drive/folders/example' : null,
+                    'keterangan' => 'Kegiatan ' . $uraian . ' untuk ' . $pelatihan->nama_pelatihan,
+                ]);
+            }
         }
     }
 }
