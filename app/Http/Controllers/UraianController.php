@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Pelatihan;
 use App\Models\Uraian;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class UraianController extends Controller
 {
@@ -25,34 +27,56 @@ class UraianController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function store(Request $request, Pelatihan $pelatihan)
-    {
-        $request->validate([
-            'uraian_kegiatan' => 'required|string',
-            'tanggal'          => 'required|date',
-            'progres'          => 'required',
-            'pic'              => 'required|string',
-            'link'             => 'nullable|url',
-            'keterangan'       => 'nullable|string',
-        ]);
+  public function store(Request $request, Pelatihan $pelatihan)
+{
+    $request->validate([
 
-        $urutan = Uraian::where('pelatihan_id', $pelatihan->id)->max('urutan');
+        'uraian_kegiatan' => 'required|string',
+        'tanggal'          => 'required|date',
+        'progres'          => 'required|in:belum,on progress,selesai',
+        'pic'              => 'required|string|max:255',
 
-        Uraian::create([
-            'pelatihan_id'    => $pelatihan->id,
-            'urutan'          => $urutan ? $urutan + 1 : 1,
-            'uraian_kegiatan' => $request->uraian_kegiatan,
-            'tanggal'         => $request->tanggal,
-            'progres'         => $request->progres,
-            'pic'             => $request->pic,
-            'link'            => $request->link,
-            'keterangan'      => $request->keterangan,
-        ]);
+        'lampiran'         => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
 
-        return redirect()
-            ->route('pelatihans.show', $pelatihan)
-            ->with('success', 'Uraian berhasil ditambahkan.');
+        'link'             => 'nullable|url',
+        'keterangan'       => 'nullable|string',
+
+    ]);
+
+    $urutan = Uraian::where('pelatihan_id', $pelatihan->id)
+        ->max('urutan');
+
+    $data = [
+
+        'pelatihan_id'    => $pelatihan->id,
+        'urutan'          => $urutan ? $urutan + 1 : 1,
+        'uraian_kegiatan' => $request->uraian_kegiatan,
+        'tanggal'         => $request->tanggal,
+        'progres'         => $request->progres,
+        'pic'             => $request->pic,
+        'link'            => $request->link,
+        'keterangan'      => $request->keterangan,
+
+    ];
+
+    if ($request->hasFile('lampiran')) {
+
+        $file = $request->file('lampiran');
+
+        $data['lampiran'] = $file->store('lampiran', 'public');
+
+        $data['lampiran_nama'] = $file->getClientOriginalName();
+
+        $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
+
     }
+
+    Uraian::create($data);
+
+    return redirect()
+        ->route('pelatihans.show', $pelatihan)
+        ->with('success', 'Uraian berhasil ditambahkan.');
+}
 
     /*
     |--------------------------------------------------------------------------
@@ -75,30 +99,53 @@ class UraianController extends Controller
     */
 
     public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
-    {
-        $request->validate([
-            'uraian_kegiatan' => 'required|string',
-            'tanggal'          => 'required|date',
-            'progres'          => 'required',
-            'pic'              => 'required|string',
-            'link'             => 'nullable|url',
-            'keterangan'       => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'uraian_kegiatan' => 'required|string',
+        'tanggal' => 'required|date',
+        'progres' => 'required|in:belum,on progress,selesai',
+        'pic' => 'required|string|max:255',
 
-        $uraian->update([
-            'uraian_kegiatan' => $request->uraian_kegiatan,
-            'tanggal'         => $request->tanggal,
-            'progres'         => $request->progres,
-            'pic'             => $request->pic,
-            'link'            => $request->link,
-            'keterangan'      => $request->keterangan,
-        ]);
+        'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
 
-        return redirect()
-            ->route('pelatihans.show', $pelatihan)
-            ->with('success', 'Uraian berhasil diperbarui.');
+        'link' => 'nullable|url',
+        'keterangan' => 'nullable|string',
+    ]);
+
+    $data = [
+
+        'uraian_kegiatan' => $request->uraian_kegiatan,
+        'tanggal'         => $request->tanggal,
+        'progres'         => $request->progres,
+        'pic'             => $request->pic,
+        'link'            => $request->link,
+        'keterangan'      => $request->keterangan,
+
+    ];
+
+    if ($request->hasFile('lampiran')) {
+
+        if ($uraian->lampiran && Storage::disk('public')->exists($uraian->lampiran)) {
+
+            Storage::disk('public')->delete($uraian->lampiran);
+
+        }
+
+        $file = $request->file('lampiran');
+
+        $data['lampiran'] = $file->store('lampiran', 'public');
+        $data['lampiran_nama'] = $file->getClientOriginalName();
+       $data['lampiran_tipe'] = strtolower(
+    $file->getClientOriginalExtension()
+);
     }
 
+    $uraian->update($data);
+
+    return redirect()
+        ->route('pelatihans.show', $pelatihan)
+        ->with('success', 'Uraian berhasil diperbarui.');
+}
     /*
     |--------------------------------------------------------------------------
     | Destroy
@@ -107,15 +154,25 @@ class UraianController extends Controller
 
     public function destroy(Pelatihan $pelatihan, Uraian $uraian)
     {
-        $uraian->delete();
+        
+        if (
+    $uraian->lampiran &&
+    Storage::disk('public')->exists($uraian->lampiran)
+) {
+    Storage::disk('public')->delete($uraian->lampiran);
+}
+
+$uraian->delete();
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)
             ->with('success', 'Uraian berhasil dihapus.');
     }
 
-    public function show(Uraian $uraian)
+  public function show(Uraian $uraian)
 {
+    $uraian->load('pelatihan');
+
     return view('uraians.show', compact('uraian'));
 }
 }
