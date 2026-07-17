@@ -8,76 +8,114 @@ use Illuminate\Http\Request;
 
 class UraianController extends Controller
 {
-    public function create()
-    {
-        $pelatihans = Pelatihan::all();
+    /*
+    |--------------------------------------------------------------------------
+    | Create
+    |--------------------------------------------------------------------------
+    */
 
-        return view('uraians.create', compact('pelatihans'));
+    public function create(Pelatihan $pelatihan)
+    {
+        return view('uraians.create', compact('pelatihan'));
     }
 
-    public function store(Request $request)
+    /*
+    |--------------------------------------------------------------------------
+    | Store
+    |--------------------------------------------------------------------------
+    */
+
+    public function store(Request $request, Pelatihan $pelatihan)
     {
         $request->validate([
-            'pelatihan_id' => 'required|exists:pelatihans,id',
-            'uraian_kegiatan' => 'required',
-            'tanggal' => 'required|date',
-            'progres' => 'required',
-            'pic' => 'required',
+            'uraian_kegiatan' => 'required|string',
+            'tanggal'          => 'required|date',
+            'progres'          => 'required',
+            'pic'              => 'required|string',
+            'link'             => 'nullable|url',
+            'keterangan'       => 'nullable|string',
         ]);
 
-        $urutan = Uraian::where('pelatihan_id', $request->pelatihan_id)
-            ->max('urutan');
+        $urutan = Uraian::where('pelatihan_id', $pelatihan->id)->max('urutan');
 
         Uraian::create([
-            'pelatihan_id' => $request->pelatihan_id,
-            'urutan' => $urutan ? $urutan + 1 : 1,
+            'pelatihan_id'    => $pelatihan->id,
+            'urutan'          => $urutan ? $urutan + 1 : 1,
             'uraian_kegiatan' => $request->uraian_kegiatan,
-            'tanggal' => $request->tanggal,
-            'progres' => $request->progres,
-            'pic' => $request->pic,
-            'link' => $request->link,
-            'keterangan' => $request->keterangan,
+            'tanggal'         => $request->tanggal,
+            'progres'         => $request->progres,
+            'pic'             => $request->pic,
+            'link'            => $request->link,
+            'keterangan'      => $request->keterangan,
         ]);
 
-        return redirect()->route('pelatihans.show', $request->pelatihan_id)
+        return redirect()
+            ->route('pelatihans.show', $pelatihan)
             ->with('success', 'Uraian berhasil ditambahkan.');
     }
 
-    public function show(Uraian $uraian)
+    /*
+    |--------------------------------------------------------------------------
+    | Edit
+    |--------------------------------------------------------------------------
+    */
+
+    public function edit(Pelatihan $pelatihan, Uraian $uraian)
     {
-        return view('uraians.show', compact('uraian'));
+        return view('uraians.edit', compact(
+            'pelatihan',
+            'uraian'
+        ));
     }
 
-    public function edit(Uraian $uraian)
-    {
-        $pelatihans = Pelatihan::all();
+    /*
+    |--------------------------------------------------------------------------
+    | Update
+    |--------------------------------------------------------------------------
+    */
 
-        return view('uraians.edit', compact('uraian', 'pelatihans'));
-    }
-
-    public function update(Request $request, Uraian $uraian)
+    public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
     {
         $request->validate([
-            'pelatihan_id' => 'required|exists:pelatihans,id',
-            'uraian_kegiatan' => 'required',
-            'tanggal' => 'required|date',
-            'progres' => 'required',
-            'pic' => 'required',
+            'uraian_kegiatan' => 'required|string',
+            'tanggal'          => 'required|date',
+            'progres'          => 'required',
+            'pic'              => 'required|string',
+            'link'             => 'nullable|url',
+            'keterangan'       => 'nullable|string',
         ]);
 
-        $uraian->update($request->all());
+        $uraian->update([
+            'uraian_kegiatan' => $request->uraian_kegiatan,
+            'tanggal'         => $request->tanggal,
+            'progres'         => $request->progres,
+            'pic'             => $request->pic,
+            'link'            => $request->link,
+            'keterangan'      => $request->keterangan,
+        ]);
 
-        return redirect()->route('pelatihans.show', $request->pelatihan_id)
+        return redirect()
+            ->route('pelatihans.show', $pelatihan)
             ->with('success', 'Uraian berhasil diperbarui.');
     }
 
-    public function destroy(Uraian $uraian)
-    {
-        $pelatihan = $uraian->pelatihan_id;
+    /*
+    |--------------------------------------------------------------------------
+    | Destroy
+    |--------------------------------------------------------------------------
+    */
 
+    public function destroy(Pelatihan $pelatihan, Uraian $uraian)
+    {
         $uraian->delete();
 
-        return redirect()->route('pelatihans.show', $pelatihan)
+        return redirect()
+            ->route('pelatihans.show', $pelatihan)
             ->with('success', 'Uraian berhasil dihapus.');
     }
+
+    public function show(Uraian $uraian)
+{
+    return view('uraians.show', compact('uraian'));
+}
 }

@@ -1,8 +1,8 @@
-<aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800">
+<aside class="sticky top-0 h-screen w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col">
 
     {{-- Logo --}}
-    <div class="h-20 flex items-center px-6 border-b border-slate-800 bg-slate-950/40">
-
+<div class="h-24 flex items-center px-6 pt-4 pb-3 border-b border-slate-800 bg-slate-950/40">
+    
         <div class="flex items-center gap-3">
 
             <div class="w-11 h-11 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
@@ -28,7 +28,7 @@
     </div>
 
     {{-- Menu --}}
-    <nav class="flex-1 px-4 py-6">
+    <nav class="flex-1 overflow-y-auto px-4 py-6 scrollbar-hide">
 
         <p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold px-4 mb-3">
             Menu Utama
@@ -39,9 +39,7 @@
             {{-- Dashboard --}}
             <a href="{{ route('dashboard') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-                {{ request()->routeIs('dashboard')
-                    ? 'bg-indigo-600 text-white shadow'
-                    : 'hover:bg-slate-800 hover:text-white' }}">
+                {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow' : 'hover:bg-slate-800 hover:text-white' }}">
 
                 <i class="fa-solid fa-chart-pie w-5"></i>
 
@@ -52,35 +50,9 @@
             </a>
 
             {{-- Data Pelatihan --}}
-            @auth
-
-                @if(auth()->user()->role == 'admin')
-
-                    <a href="{{ route('admin.pelatihans.index') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-                        {{ request()->routeIs('admin.pelatihans.*')
-                            ? 'bg-indigo-600 text-white shadow'
-                            : 'hover:bg-slate-800 hover:text-white' }}">
-
-                @else
-
-                    <a href="{{ route('pelatihans.index') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-                        {{ request()->routeIs('pelatihans.*')
-                            ? 'bg-indigo-600 text-white shadow'
-                            : 'hover:bg-slate-800 hover:text-white' }}">
-
-                @endif
-
-            @else
-
-                <a href="{{ route('pelatihans.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('pelatihans.*')
-                        ? 'bg-indigo-600 text-white shadow'
-                        : 'hover:bg-slate-800 hover:text-white' }}">
-
-            @endauth
+            <a href="{{ route('pelatihans.index') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition
+                {{ request()->routeIs('pelatihans.*') ? 'bg-indigo-600 text-white shadow' : 'hover:bg-slate-800 hover:text-white' }}">
 
                 <i class="fa-solid fa-folder-open w-5"></i>
 
@@ -92,10 +64,53 @@
 
         </div>
 
+        {{-- ========================= --}}
+        {{-- FAVORIT --}}
+        {{-- ========================= --}}
+
+        @auth
+
+            @if(isset($favoritPelatihans) && $favoritPelatihans->count())
+
+                <div class="mt-8">
+
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold px-4 mb-3">
+
+                        Akses Cepat
+
+                    </p>
+
+                    <div class="space-y-2">
+
+                        @foreach($favoritPelatihans as $item)
+
+                            <a href="{{ route('pelatihans.show',$item) }}"
+                                class="flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 hover:text-white">
+
+                                <i class="fa-solid fa-star text-yellow-400"></i>
+
+                                <span class="truncate">
+
+                                    {{ $item->nama_pelatihan }}
+
+                                </span>
+
+                            </a>
+
+                        @endforeach
+
+                    </div>
+
+                </div>
+
+            @endif
+
+        @endauth
+
     </nav>
 
     {{-- Footer --}}
-    <div class="border-t border-slate-800 p-4">
+    <div class="border-t border-slate-800 p-4 flex-shrink-0">
 
         @auth
 

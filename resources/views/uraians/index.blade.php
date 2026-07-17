@@ -26,13 +26,6 @@
                     </div>
                 </div>
 
-                @auth
-                    @if(auth()->user()->role == 'admin')
-                        <a href="#" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
-                            <i class="fa-solid fa-plus mr-2"></i> Tambah Uraian
-                        </a>
-                    @endif
-                @endauth
             </div>
 
             {{-- Progress Bar --}}
@@ -142,6 +135,35 @@
 
 </div>
 
+        <div class="flex justify-between items-center mb-6 pt-3 px-6">
+
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">
+            Uraian Kegiatan
+        </h2>
+
+        <p class="text-slate-500 text-sm mt-1">
+            Daftar uraian kegiatan pelatihan.
+        </p>
+    </div>
+
+    @auth
+        @if(auth()->user()->role == 'admin')
+
+            <a href="{{ route('uraians.create', $pelatihan) }}"
+                class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm transition">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Tambah Data
+
+            </a>
+
+        @endif
+    @endauth
+
+</div>
+
             {{-- Table --}}
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm text-slate-600">
@@ -214,15 +236,61 @@
                                 @auth
                                     @if(auth()->user()->role == 'admin')
                                         <td class="px-4 py-3">
-                                            <div class="flex justify-center items-center gap-2">
-                                                <a href="#" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition" title="Edit">
-                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                </a>
-                                                <button type="button" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition" title="Hapus">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+
+    <div class="flex justify-center items-center gap-2">
+
+        {{-- Detail --}}
+        <a href="{{ route('uraians.show', $uraian) }}"
+    class="text-sky-600 hover:text-sky-800"
+    title="Detail">
+
+    <i class="fa-solid fa-eye"></i>
+
+</a>
+
+        @auth
+            @if(auth()->user()->role == 'admin')
+
+                {{-- Edit --}}
+                <a href="{{ route('uraians.edit', [
+    'pelatihan' => $pelatihan,
+    'uraian' => $uraian
+]) }}"
+class="text-amber-500 hover:text-amber-700"
+title="Edit">
+
+    <i class="fa-solid fa-pen"></i>
+
+</a>
+
+                {{-- Hapus --}}
+                <form
+action="{{ route('uraians.destroy',[
+    'pelatihan'=>$pelatihan,
+    'uraian'=>$uraian
+]) }}"
+method="POST"
+onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+
+    @csrf
+    @method('DELETE')
+
+    <button
+        class="text-red-600 hover:text-red-800"
+        title="Hapus">
+
+        <i class="fa-solid fa-trash"></i>
+
+    </button>
+
+</form>
+
+            @endif
+        @endauth
+
+    </div>
+
+</td>
                                     @endif
                                 @endauth
                             </tr>

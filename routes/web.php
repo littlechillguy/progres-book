@@ -10,96 +10,104 @@ use App\Http\Controllers\ProfileController;
 |--------------------------------------------------------------------------
 | Public Routes
 |--------------------------------------------------------------------------
-|
-| Dapat diakses oleh semua pengunjung.
-|
 */
 
 Route::get('/', [DashboardController::class, 'index'])
     ->name('dashboard');
 
+/*
+|--------------------------------------------------------------------------
+| Pelatihan
+|--------------------------------------------------------------------------
+*/
+
+/*
+| Route yang berupa text HARUS di atas parameter {pelatihan}
+*/
+
 Route::get('/pelatihans', [PelatihanController::class, 'index'])
     ->name('pelatihans.index');
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/pelatihans/create', [PelatihanController::class, 'create'])
+        ->name('pelatihans.create');
+
+    Route::post('/pelatihans', [PelatihanController::class, 'store'])
+        ->name('pelatihans.store');
+
+    Route::get('/pelatihans/{pelatihan}/edit', [PelatihanController::class, 'edit'])
+        ->name('pelatihans.edit');
+
+    Route::put('/pelatihans/{pelatihan}', [PelatihanController::class, 'update'])
+        ->name('pelatihans.update');
+
+    Route::delete('/pelatihans/{pelatihan}', [PelatihanController::class, 'destroy'])
+        ->name('pelatihans.destroy');
+
+    Route::patch('/pelatihans/{pelatihan}/favorite',[PelatihanController::class,'favorite']
+        )->name('pelatihans.favorite');
+
+});
+
+/*
+| Route parameter PALING BAWAH
+*/
 
 Route::get('/pelatihans/{pelatihan}', [PelatihanController::class, 'show'])
     ->name('pelatihans.show');
 
+Route::get('/uraians/{uraian}', [UraianController::class, 'show'])
+    ->name('uraians.show');
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| Uraian
 |--------------------------------------------------------------------------
-|
-| Hanya dapat diakses oleh administrator yang login.
-|
 */
 
-Route::middleware('auth')
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
+Route::middleware('auth')->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Dashboard Admin
-        |--------------------------------------------------------------------------
-        */
+    // Form tambah uraian
+    Route::get('/pelatihans/{pelatihan}/uraians/create', [UraianController::class, 'create'])
+        ->name('uraians.create');
 
-        Route::get('/', function () {
-            return redirect()->route('admin.pelatihans.index');
-        })->name('dashboard');
+    // Simpan uraian baru
+    Route::post('/pelatihans/{pelatihan}/uraians', [UraianController::class, 'store'])
+        ->name('uraians.store');
 
+    // Form edit uraian
+    Route::get('/pelatihans/{pelatihan}/uraians/{uraian}/edit', [UraianController::class, 'edit'])
+        ->name('uraians.edit');
 
-        /*
-        |--------------------------------------------------------------------------
-        | CRUD Pelatihan
-        |--------------------------------------------------------------------------
-        */
+    // Update uraian
+    Route::put('/pelatihans/{pelatihan}/uraians/{uraian}', [UraianController::class, 'update'])
+        ->name('uraians.update');
 
-        Route::get('/pelatihans', [PelatihanController::class, 'adminIndex'])
-            ->name('pelatihans.index');
+    // Hapus uraian
+    Route::delete('/pelatihans/{pelatihan}/uraians/{uraian}', [UraianController::class, 'destroy'])
+        ->name('uraians.destroy');
 
-        Route::get('/pelatihans/create', [PelatihanController::class, 'create'])
-            ->name('pelatihans.create');
+});
 
-        Route::post('/pelatihans', [PelatihanController::class, 'store'])
-            ->name('pelatihans.store');
+/*
+|--------------------------------------------------------------------------
+| Profile
+|--------------------------------------------------------------------------
+*/
 
-        Route::get('/pelatihans/{pelatihan}/edit', [PelatihanController::class, 'edit'])
-            ->name('pelatihans.edit');
+Route::middleware('auth')->group(function () {
 
-        Route::put('/pelatihans/{pelatihan}', [PelatihanController::class, 'update'])
-            ->name('pelatihans.update');
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
 
-        Route::delete('/pelatihans/{pelatihan}', [PelatihanController::class, 'destroy'])
-            ->name('pelatihans.destroy');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
 
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 
-        /*
-        |--------------------------------------------------------------------------
-        | CRUD Uraian
-        |--------------------------------------------------------------------------
-        */
-
-        Route::resource('uraians', UraianController::class);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profile
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get('/profile', [ProfileController::class, 'edit'])
-            ->name('profile.edit');
-
-        Route::patch('/profile', [ProfileController::class, 'update'])
-            ->name('profile.update');
-
-        Route::delete('/profile', [ProfileController::class, 'destroy'])
-            ->name('profile.destroy');
-    });
-
+});
 
 /*
 |--------------------------------------------------------------------------

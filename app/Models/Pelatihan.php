@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Pelatihan extends Model
 {
     protected $fillable = [
-        'nama_pelatihan',
-        'tahapan',
-        'kegiatan',
-        'hari',
-        'tanggal',
-        'tempat',
-    ];
+
+    'nama_pelatihan',
+    'tahapan',
+    'kegiatan',
+    'hari',
+    'tanggal',
+    'tempat',
+    'favorit',
+
+];
 
     public function uraians(): HasMany
     {

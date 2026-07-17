@@ -69,7 +69,7 @@ class PelatihanController extends Controller
 
         $this->hitungProgress($pelatihan);
 
-        return view('pelatihans.show', [
+        return view('uraians.index', [
             'pelatihan' => $pelatihan,
             'uraians'   => $uraians,
             'total'     => $pelatihan->total_kegiatan,
@@ -78,28 +78,10 @@ class PelatihanController extends Controller
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN
-    |--------------------------------------------------------------------------
-    */
-
-    public function adminIndex()
-    {
-        $pelatihans = Pelatihan::with('uraians')
-            ->latest()
-            ->get();
-
-        foreach ($pelatihans as $pelatihan) {
-            $this->hitungProgress($pelatihan);
-        }
-
-        return view('admin.pelatihans.index', compact('pelatihans'));
-    }
 
     public function create()
     {
-        return view('admin.pelatihans.create');
+        return view('pelatihans.create');
     }
 
     public function store(Request $request)
@@ -116,13 +98,13 @@ class PelatihanController extends Controller
         Pelatihan::create($validated);
 
         return redirect()
-            ->route('admin.pelatihans.index')
+            ->route('pelatihans.index')
             ->with('success', 'Pelatihan berhasil ditambahkan.');
     }
 
     public function edit(Pelatihan $pelatihan)
     {
-        return view('admin.pelatihans.edit', compact('pelatihan'));
+        return view('pelatihans.edit', compact('pelatihan'));
     }
 
     public function update(Request $request, Pelatihan $pelatihan)
@@ -139,7 +121,7 @@ class PelatihanController extends Controller
         $pelatihan->update($validated);
 
         return redirect()
-            ->route('admin.pelatihans.index')
+            ->route('pelatihans.index')
             ->with('success', 'Pelatihan berhasil diperbarui.');
     }
 
@@ -148,7 +130,7 @@ class PelatihanController extends Controller
         $pelatihan->delete();
 
         return redirect()
-            ->route('admin.pelatihans.index')
+            ->route('pelatihans.index')
             ->with('success', 'Pelatihan berhasil dihapus.');
     }
 
@@ -173,4 +155,15 @@ class PelatihanController extends Controller
             ? round(($selesai / $total) * 100)
             : 0;
     }
+
+    public function favorite(Pelatihan $pelatihan)
+{
+    $pelatihan->update([
+
+        'favorit' => !$pelatihan->favorit
+
+    ]);
+
+    return back();
+}
 }
