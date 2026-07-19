@@ -17,7 +17,6 @@ class Uraian extends Model
         'lampiran',
         'lampiran_nama',
         'lampiran_tipe',
-        'link',
         'keterangan',
     ];
 

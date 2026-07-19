@@ -30,33 +30,27 @@ class UraianController extends Controller
   public function store(Request $request, Pelatihan $pelatihan)
 {
     $request->validate([
-
         'uraian_kegiatan' => 'required|string',
-        'tanggal'          => 'required|date',
-        'progres'          => 'required|in:belum,on progress,selesai',
-        'pic'              => 'required|string|max:255',
+        'tanggal'         => 'required|date',
+        'progres'         => 'required|in:belum,on progress,selesai',
+        'pic'             => 'required|string|max:255',
 
-        'lampiran'         => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+        'lampiran'        => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
 
-        'link'             => 'nullable|url',
-        'keterangan'       => 'nullable|string',
-
+        'keterangan'      => 'nullable|string',
     ]);
 
     $urutan = Uraian::where('pelatihan_id', $pelatihan->id)
         ->max('urutan');
 
     $data = [
-
         'pelatihan_id'    => $pelatihan->id,
         'urutan'          => $urutan ? $urutan + 1 : 1,
         'uraian_kegiatan' => $request->uraian_kegiatan,
         'tanggal'         => $request->tanggal,
         'progres'         => $request->progres,
         'pic'             => $request->pic,
-        'link'            => $request->link,
         'keterangan'      => $request->keterangan,
-
     ];
 
     if ($request->hasFile('lampiran')) {
@@ -64,9 +58,7 @@ class UraianController extends Controller
         $file = $request->file('lampiran');
 
         $data['lampiran'] = $file->store('lampiran', 'public');
-
         $data['lampiran_nama'] = $file->getClientOriginalName();
-
         $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
 
     }
@@ -97,47 +89,41 @@ class UraianController extends Controller
     | Update
     |--------------------------------------------------------------------------
     */
-
-    public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
+public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
 {
     $request->validate([
         'uraian_kegiatan' => 'required|string',
-        'tanggal' => 'required|date',
-        'progres' => 'required|in:belum,on progress,selesai',
-        'pic' => 'required|string|max:255',
+        'tanggal'         => 'required|date',
+        'progres'         => 'required|in:belum,on progress,selesai',
+        'pic'             => 'required|string|max:255',
 
-        'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+        'lampiran'        => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
 
-        'link' => 'nullable|url',
-        'keterangan' => 'nullable|string',
+        'keterangan'      => 'nullable|string',
     ]);
 
     $data = [
-
         'uraian_kegiatan' => $request->uraian_kegiatan,
         'tanggal'         => $request->tanggal,
         'progres'         => $request->progres,
         'pic'             => $request->pic,
-        'link'            => $request->link,
         'keterangan'      => $request->keterangan,
-
     ];
 
     if ($request->hasFile('lampiran')) {
 
-        if ($uraian->lampiran && Storage::disk('public')->exists($uraian->lampiran)) {
-
+        if (
+            $uraian->lampiran &&
+            Storage::disk('public')->exists($uraian->lampiran)
+        ) {
             Storage::disk('public')->delete($uraian->lampiran);
-
         }
 
         $file = $request->file('lampiran');
 
         $data['lampiran'] = $file->store('lampiran', 'public');
         $data['lampiran_nama'] = $file->getClientOriginalName();
-       $data['lampiran_tipe'] = strtolower(
-    $file->getClientOriginalExtension()
-);
+        $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
     }
 
     $uraian->update($data);

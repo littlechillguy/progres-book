@@ -219,15 +219,69 @@
                                     {{ $uraian->pic ?? '-' }}
                                 </td>
                                 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    @if($uraian->link)
-                                        <a href="{{ $uraian->link }}" target="_blank" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 hover:underline">
-                                            <i class="fa-solid fa-link text-xs mr-1"></i> File
-                                        </a>
-                                    @else
-                                        <span class="text-slate-400">-</span>
-                                    @endif
-                                </td>
+                              <td class="px-4 py-3">
+
+    @if($uraian->lampiran)
+
+        <div class="flex items-center justify-between gap-4">
+
+            <a href="{{ route('uraians.show', $uraian) }}"
+               class="flex items-center gap-3 flex-1 hover:text-indigo-600 transition">
+
+                <i class="fa-solid {{ $uraian->fileIcon() }} text-2xl text-indigo-600"></i>
+
+                <div class="overflow-hidden">
+
+                    <p class="font-semibold truncate">
+
+                        {{ $uraian->lampiran_nama }}
+
+                    </p>
+
+                    <p class="text-xs text-slate-500">
+
+                        {{ strtoupper($uraian->lampiran_tipe) }}
+
+                    </p>
+
+                </div>
+
+            </a>
+
+            <div class="flex gap-2">
+
+                <a href="{{ route('uraians.show', $uraian) }}"
+                   class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition"
+                   title="Preview">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                </a>
+
+                <a href="{{ asset('storage/'.$uraian->lampiran) }}"
+                   download
+                   class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-600 hover:text-white transition"
+                   title="Download">
+
+                    <i class="fa-solid fa-download"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    @else
+
+        <span class="text-slate-400 italic">
+
+            -
+
+        </span>
+
+    @endif
+
+</td>
                                 
                                 <td class="px-4 py-3 text-slate-500 truncate max-w-xs" title="{{ $uraian->keterangan }}">
                                     {{ $uraian->keterangan ?? '-' }}

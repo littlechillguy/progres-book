@@ -115,51 +115,45 @@
 
                 </div>
 
-                {{-- Lampiran --}}
-                <div class="md:col-span-2">
+               {{-- Lampiran --}}
+<div class="md:col-span-2">
 
-                    <label class="font-semibold">
-                        Lampiran
-                    </label>
+    <label class="font-semibold">
+        Lampiran (Opsional)
+    </label>
 
-                    <div class="mt-2 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-indigo-500 transition">
+    <div class="mt-2 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-indigo-500 transition">
 
-                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-600 mb-3"></i>
+        <i class="fa-solid fa-cloud-arrow-up text-5xl text-indigo-600 mb-4"></i>
 
-                        <p class="font-semibold text-slate-700">
-                            Upload Lampiran
-                        </p>
+        <p class="font-semibold text-slate-700">
+            Klik atau pilih file untuk diupload
+        </p>
 
-                        <p class="text-sm text-slate-500 mb-5">
-                            PDF, Word, Excel, PowerPoint, JPG, JPEG, PNG
-                            <br>
-                            Maksimal 10 MB
-                        </p>
+        <p class="text-sm text-slate-500 mt-2 mb-4">
+            Mendukung PDF, Word, Excel, PowerPoint, JPG, JPEG, PNG
+        </p>
 
-                        <input
-                            type="file"
-                            name="lampiran"
-                            class="block w-full text-sm">
+        <p class="text-xs text-slate-400 mb-5">
+            Maksimal ukuran file 10 MB
+        </p>
 
-                    </div>
+        <input
+            type="file"
+            name="lampiran"
+            class="block w-full text-sm
+                   file:mr-4
+                   file:py-2
+                   file:px-4
+                   file:rounded-lg
+                   file:border-0
+                   file:bg-indigo-600
+                   file:text-white
+                   hover:file:bg-indigo-700">
 
-                </div>
+    </div>
 
-                {{-- Link --}}
-                <div class="md:col-span-2">
-
-                    <label class="font-semibold">
-                        Link Referensi (Opsional)
-                    </label>
-
-                    <input
-                        type="url"
-                        name="link"
-                        value="{{ old('link') }}"
-                        placeholder="https://..."
-                        class="w-full mt-2 rounded-lg border-slate-300">
-
-                </div>
+</div>
 
                 {{-- Keterangan --}}
                 <div class="md:col-span-2">

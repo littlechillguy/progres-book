@@ -12,15 +12,11 @@
         <div>
 
             <h1 class="text-3xl font-bold text-slate-800">
-
                 Edit Uraian
-
             </h1>
 
             <p class="text-slate-500 mt-2">
-
                 {{ $pelatihan->nama_pelatihan }}
-
             </p>
 
         </div>
@@ -29,7 +25,6 @@
             class="bg-slate-200 hover:bg-slate-300 px-5 py-3 rounded-xl transition">
 
             <i class="fa-solid fa-arrow-left mr-2"></i>
-
             Kembali
 
         </a>
@@ -52,9 +47,7 @@
                 <div>
 
                     <label class="font-semibold">
-
                         PIC
-
                     </label>
 
                     <input
@@ -70,9 +63,7 @@
                 <div>
 
                     <label class="font-semibold">
-
                         Tanggal
-
                     </label>
 
                     <input
@@ -88,9 +79,7 @@
                 <div>
 
                     <label class="font-semibold">
-
                         Progress
-
                     </label>
 
                     <select
@@ -98,17 +87,17 @@
                         class="w-full mt-2 rounded-lg border-slate-300">
 
                         <option value="belum"
-                            {{ old('progres', $uraian->progres)=='belum' ? 'selected' : '' }}>
+                            {{ old('progres', $uraian->progres) == 'belum' ? 'selected' : '' }}>
                             Belum
                         </option>
 
                         <option value="on progress"
-                            {{ old('progres', $uraian->progres)=='on progress' ? 'selected' : '' }}>
+                            {{ old('progres', $uraian->progres) == 'on progress' ? 'selected' : '' }}>
                             On Progress
                         </option>
 
                         <option value="selesai"
-                            {{ old('progres', $uraian->progres)=='selesai' ? 'selected' : '' }}>
+                            {{ old('progres', $uraian->progres) == 'selesai' ? 'selected' : '' }}>
                             Selesai
                         </option>
 
@@ -120,9 +109,7 @@
                 <div class="md:col-span-2">
 
                     <label class="font-semibold">
-
                         Uraian Kegiatan
-
                     </label>
 
                     <textarea
@@ -139,9 +126,7 @@
                 <div class="md:col-span-2">
 
                     <label class="font-semibold">
-
                         Lampiran Saat Ini
-
                     </label>
 
                     <div class="mt-3 flex items-center justify-between border rounded-xl p-4 bg-slate-50">
@@ -153,26 +138,21 @@
                             <div>
 
                                 <p class="font-semibold">
-
                                     {{ $uraian->lampiran_nama }}
-
                                 </p>
 
                                 <p class="text-sm text-slate-500">
-
                                     File yang sedang digunakan
-
                                 </p>
 
                             </div>
 
                         </div>
 
-                        <a
-                            href="{{ asset('storage/'.$uraian->lampiran) }}"
-                            target="_blank"
-                            class="text-indigo-600 hover:underline">
+                        <a href="{{ route('uraians.show', $uraian) }}"
+                            class="text-indigo-600 hover:text-indigo-800 font-semibold">
 
+                            <i class="fa-solid fa-eye mr-1"></i>
                             Lihat File
 
                         </a>
@@ -187,9 +167,7 @@
                 <div class="md:col-span-2">
 
                     <label class="font-semibold">
-
                         Ganti Lampiran (Opsional)
-
                     </label>
 
                     <div class="mt-2 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center">
@@ -197,40 +175,26 @@
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-600 mb-3"></i>
 
                         <p class="font-semibold">
-
                             Upload File Baru
-
                         </p>
 
                         <p class="text-sm text-slate-500 mb-5">
-
                             Kosongkan jika tidak ingin mengganti lampiran.
-
                         </p>
 
                         <input
                             type="file"
                             name="lampiran"
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                             class="block w-full text-sm">
 
                     </div>
 
-                </div>
-
-                {{-- Link --}}
-                <div class="md:col-span-2">
-
-                    <label class="font-semibold">
-
-                        Link Referensi
-
-                    </label>
-
-                    <input
-                        type="url"
-                        name="link"
-                        value="{{ old('link', $uraian->link) }}"
-                        class="w-full mt-2 rounded-lg border-slate-300">
+                    @error('lampiran')
+                        <p class="text-red-500 text-sm mt-2">
+                            {{ $message }}
+                        </p>
+                    @enderror
 
                 </div>
 
@@ -238,9 +202,7 @@
                 <div class="md:col-span-2">
 
                     <label class="font-semibold">
-
                         Keterangan
-
                     </label>
 
                     <textarea
@@ -266,7 +228,6 @@
                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl">
 
                     <i class="fa-solid fa-save mr-2"></i>
-
                     Simpan Perubahan
 
                 </button>

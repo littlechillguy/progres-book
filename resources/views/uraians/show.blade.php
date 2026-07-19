@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto px-6 py-6">
+<div class="max-w-7xl mx-auto px-6 py-6">
 
     {{-- Header --}}
     <div class="flex justify-between items-center mb-8">
@@ -108,124 +108,178 @@
         </div>
 
         {{-- Lampiran --}}
-        @if($uraian->lampiran)
-
         <div class="border-t p-8">
 
-            <h3 class="text-xl font-bold mb-6">
+            <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+
+                <i class="fa-solid fa-paperclip text-indigo-600"></i>
+
                 Lampiran
+
             </h3>
 
-            {{-- Preview Gambar --}}
-            @if($uraian->isImage())
+            @if($uraian->lampiran)
 
-                <div class="rounded-xl overflow-hidden border mb-6">
+                {{-- Preview Gambar --}}
+                @if($uraian->isImage())
 
-                    <img
-                        src="{{ asset('storage/'.$uraian->lampiran) }}"
-                        class="w-full object-contain max-h-[700px]">
+                    <div class="rounded-xl overflow-hidden border mb-6 bg-slate-50">
+
+                        <img
+                            src="{{ asset('storage/'.$uraian->lampiran) }}"
+                            loading="lazy"
+                            class="w-full object-contain max-h-[700px] rounded-lg">
+
+                    </div>
+
+                {{-- Preview PDF --}}
+                @elseif($uraian->isPdf())
+
+                    <div class="rounded-xl overflow-hidden border mb-6">
+
+                        <iframe
+                            src="{{ asset('storage/'.$uraian->lampiran) }}"
+                            width="100%"
+                            height="700"
+                            class="rounded-lg">
+
+                        </iframe>
+
+                    </div>
+
+                    <p class="text-sm text-slate-500 mb-6">
+
+                        Jika preview tidak muncul,
+                        <a
+                            href="{{ asset('storage/'.$uraian->lampiran) }}"
+                            target="_blank"
+                            class="text-indigo-600 hover:underline">
+
+                            klik di sini.
+
+                        </a>
+
+                    </p>
+
+                {{-- Word / Excel / PPT --}}
+                @else
+
+                    <div class="bg-slate-50 border rounded-xl p-10 text-center">
+
+                        <i class="fa-solid {{ $uraian->fileIcon() }} text-7xl text-indigo-600 mb-4"></i>
+
+                        <h4 class="text-lg font-semibold">
+
+                            {{ $uraian->lampiran_nama }}
+
+                        </h4>
+
+                        <span class="inline-flex mt-3 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs">
+
+                            {{ strtoupper($uraian->lampiran_tipe) }}
+
+                        </span>
+
+                        <p class="text-slate-500 mt-4">
+
+                            Preview belum tersedia untuk tipe file ini.
+
+                        </p>
+
+                    </div>
+
+                @endif
+
+                {{-- Informasi File --}}
+                <div class="mt-6 bg-slate-50 border rounded-xl p-6">
+
+                    <div class="flex flex-wrap justify-between items-center gap-6">
+
+                        <div>
+
+                            <p class="text-sm text-slate-500">
+                                Nama File
+                            </p>
+
+                            <p class="font-semibold text-lg">
+
+                                {{ $uraian->lampiran_nama }}
+
+                            </p>
+
+                            <div class="flex items-center gap-3 mt-2">
+
+                                <span class="px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs">
+
+                                    {{ strtoupper($uraian->lampiran_tipe) }}
+
+                                </span>
+
+                                <span class="text-sm text-slate-500">
+
+                                    {{ number_format(Storage::disk('public')->size($uraian->lampiran)/1024,1) }}
+                                    KB
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="flex gap-3">
+
+                            <a
+                                href="{{ asset('storage/'.$uraian->lampiran) }}"
+                                target="_blank"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl transition">
+
+                                <i class="fa-solid fa-up-right-from-square mr-2"></i>
+
+                                Buka
+
+                            </a>
+
+                            <a
+                                href="{{ asset('storage/'.$uraian->lampiran) }}"
+                                download="{{ $uraian->lampiran_nama }}"
+                                class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl transition">
+
+                                <i class="fa-solid fa-download mr-2"></i>
+
+                                Download
+
+                            </a>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-            {{-- Preview PDF --}}
-            @elseif($uraian->isPdf())
-
-                <div class="rounded-xl overflow-hidden border mb-6">
-
-                    <iframe
-                        src="{{ asset('storage/'.$uraian->lampiran) }}"
-                        width="100%"
-                        height="700">
-                    </iframe>
-
-                </div>
-
-            {{-- File selain gambar/PDF --}}
             @else
 
+                {{-- Tidak ada lampiran --}}
                 <div class="bg-slate-50 border rounded-xl p-10 text-center">
 
-                    <i class="fa-solid {{ $uraian->fileIcon() }} text-7xl text-indigo-600 mb-4"></i>
+                    <i class="fa-regular fa-folder-open text-6xl text-slate-400 mb-5"></i>
 
-                    <h4 class="text-lg font-semibold">
-                        {{ $uraian->lampiran_nama }}
+                    <h4 class="text-xl font-semibold mb-2">
+
+                        Tidak Ada Lampiran
+
                     </h4>
 
-                    <p class="text-slate-500 mt-2">
-                        Preview tidak tersedia untuk tipe file ini.
+                    <p class="text-slate-500">
+
+                        Belum ada file yang diunggah untuk uraian kegiatan ini.
+
                     </p>
 
                 </div>
 
             @endif
 
-            {{-- Informasi Lampiran --}}
-            <div class="mt-6 bg-slate-50 border rounded-xl p-5">
-
-                <div class="flex flex-wrap justify-between items-center gap-4">
-
-                    <div>
-
-                        <p class="text-sm text-slate-500">
-                            Nama File
-                        </p>
-
-                        <p class="font-semibold">
-                            {{ $uraian->lampiran_nama }}
-                        </p>
-
-                    </div>
-
-                    <div class="flex gap-3">
-
-                        <a href="{{ asset('storage/'.$uraian->lampiran) }}"
-                            target="_blank"
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl transition">
-
-                            <i class="fa-solid fa-up-right-from-square mr-2"></i>
-                            Buka
-
-                        </a>
-
-                        <a href="{{ asset('storage/'.$uraian->lampiran) }}"
-                            download="{{ $uraian->lampiran_nama }}"
-                            class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl transition">
-
-                            <i class="fa-solid fa-download mr-2"></i>
-                            Download
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
         </div>
-
-        @endif
-
-        {{-- Link Referensi --}}
-        @if($uraian->link)
-
-        <div class="border-t p-8">
-
-            <h3 class="text-xl font-bold mb-4">
-                Link Referensi
-            </h3>
-
-            <a href="{{ $uraian->link }}"
-                target="_blank"
-                class="text-indigo-600 hover:underline break-all">
-
-                {{ $uraian->link }}
-
-            </a>
-
-        </div>
-
-        @endif
 
         {{-- Keterangan --}}
         @if($uraian->keterangan)
@@ -233,7 +287,9 @@
         <div class="border-t p-8">
 
             <h3 class="text-xl font-bold mb-4">
+
                 Keterangan
+
             </h3>
 
             <div class="leading-8 text-slate-700 whitespace-pre-line">
