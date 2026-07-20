@@ -20,33 +20,50 @@ class PelatihanSeeder extends Seeder
         ];
 
         $templateUraian = [
-            'Penyusunan TOR','Penyusunan Jadwal','Penyusunan Anggaran','Penyusunan Modul','Koordinasi Internal','Koordinasi Narasumber','Pengiriman Undangan','Registrasi Peserta','Persiapan Ruangan','Persiapan Peralatan','Briefing Panitia','Pembukaan Acara','Penyampaian Materi 1','Penyampaian Materi 2','Diskusi Kelompok','Praktik Mandiri','Pendampingan Peserta','Post Test','Evaluasi Peserta','Penyusunan Laporan'
+            'Penyusunan TOR','Penyusunan Jadwal','Penyusunan Anggaran','Penyusunan Modul',
+            'Koordinasi Internal','Koordinasi Narasumber','Pengiriman Undangan','Registrasi Peserta',
+            'Persiapan Ruangan','Persiapan Peralatan','Briefing Panitia','Pembukaan Acara',
+            'Penyampaian Materi 1','Penyampaian Materi 2','Diskusi Kelompok','Praktik Mandiri',
+            'Pendampingan Peserta','Post Test','Evaluasi Peserta','Penyusunan Laporan'
         ];
 
-        $pics = ['BPSDM','Panitia','Sekretariat','Tim IT','Narasumber','Instruktur','Admin','Ketua Panitia'];
+        $pics = [
+            'BPSDM',
+            'Panitia',
+            'Sekretariat',
+            'Tim IT',
+            'Narasumber',
+            'Instruktur',
+            'Admin',
+            'Ketua Panitia'
+        ];
 
         foreach ($pelatihans as $index => $data) {
+
             $pelatihan = Pelatihan::create($data);
+
             $baseDate = Carbon::parse($data['tanggal'])->subDays(20);
 
             foreach ($templateUraian as $i => $uraian) {
-                if ($i < 10) {
-                    $status = 'selesai';
-                } elseif ($i < 15) {
-                    $status = 'on progress';
-                } else {
-                    $status = 'belum';
-                }
+
+                $status = $i < 10
+                    ? 'selesai'
+                    : ($i < 15 ? 'on progress' : 'belum');
 
                 Uraian::create([
-                    'pelatihan_id' => $pelatihan->id,
-                    'urutan' => $i + 1,
+                    'pelatihan_id'    => $pelatihan->id,
+                    'urutan'          => $i + 1,
                     'uraian_kegiatan' => $uraian . ' - ' . $pelatihan->nama_pelatihan,
-                    'tanggal' => $baseDate->copy()->addDays($i)->format('Y-m-d'),
-                    'progres' => $status,
-                    'pic' => $pics[($i + $index) % count($pics)],
-                    'link' => $i % 4 == 0 ? 'https://drive.google.com/drive/folders/example' : null,
-                    'keterangan' => 'Kegiatan ' . $uraian . ' untuk ' . $pelatihan->nama_pelatihan,
+                    'tanggal'         => $baseDate->copy()->addDays($i),
+                    'progres'         => $status,
+                    'pic'             => $pics[($i + $index) % count($pics)],
+
+                    // Lampiran
+                    'lampiran'        => null,
+                    'lampiran_nama'   => null,
+                    'lampiran_tipe'   => null,
+
+                    'keterangan'      => 'Kegiatan ' . $uraian . ' untuk ' . $pelatihan->nama_pelatihan,
                 ]);
             }
         }

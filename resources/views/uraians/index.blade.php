@@ -9,18 +9,20 @@
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <div class="flex flex-col md:flex-row justify-between items-start gap-4">
                 <div class="flex-1">
-                    <a href="{{ route('pelatihans.index') }}" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors mb-2">
+                    <a href="{{ route('pelatihans.index') }}"
+                        class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors mb-2">
                         <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
                     </a>
-                    
+
                     <h1 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">
                         {{ $pelatihan->nama_pelatihan }}
                     </h1>
-                    
+
                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-sm text-slate-600 font-medium">
                         <span class="bg-slate-100 px-2.5 py-1 rounded-md">{{ $pelatihan->tahapan }}</span>
                         <span class="text-slate-300">•</span>
-                        <span><i class="fa-regular fa-calendar mr-1"></i> {{ $pelatihan->hari }}, {{ \Carbon\Carbon::parse($pelatihan->tanggal)->translatedFormat('d F Y') }}</span>
+                        <span><i class="fa-regular fa-calendar mr-1"></i> {{ $pelatihan->hari }},
+                            {{ \Carbon\Carbon::parse($pelatihan->tanggal)->translatedFormat('d F Y') }}</span>
                         <span class="text-slate-300">•</span>
                         <span><i class="fa-solid fa-location-dot mr-1"></i> {{ $pelatihan->tempat }}</span>
                     </div>
@@ -33,152 +35,144 @@
                 <div class="flex justify-between items-end mb-2">
                     <span class="text-sm font-semibold text-slate-700">Progress Pelatihan</span>
                     <span class="text-sm font-bold {{ $progress == 100 ? 'text-green-600' : 'text-indigo-600' }}">
-                        {{ $progress }}% <span class="text-slate-500 font-normal text-xs ml-1">({{ $selesai }}/{{ $total }})</span>
+                        {{ $progress }}% <span
+                            class="text-slate-500 font-normal text-xs ml-1">({{ $selesai }}/{{ $total }})</span>
                     </span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                    <div class="h-2.5 rounded-full transition-all duration-700 ease-in-out {{ $progress == 100 ? 'bg-green-500' : 'bg-indigo-600' }}" style="width: {{ $progress }}%"></div>
+                    <div class="h-2.5 rounded-full transition-all duration-700 ease-in-out {{ $progress == 100 ? 'bg-green-500' : 'bg-indigo-600' }}"
+                        style="width: {{ $progress }}%"></div>
                 </div>
             </div>
         </div>
 
         {{-- Main Content Card (Toolbar + Table) --}}
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            
+
             {{-- Toolbar Filter --}}
-<div class="p-5 border-b border-slate-200 bg-slate-50/50">
+            <div class="p-5 border-b border-slate-200 bg-slate-50/50">
 
-    <form method="GET" action="{{ route('pelatihans.show', $pelatihan->id) }}">
+                <form method="GET" action="{{ route('pelatihans.show', $pelatihan->id) }}">
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
 
-            {{-- Search --}}
-            <div class="md:col-span-5 relative">
+                        {{-- Search --}}
+                        <div class="md:col-span-5 relative">
 
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <i class="fa-solid fa-search text-sm"></i>
+                            <div
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-search text-sm"></i>
+                            </div>
+
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Cari uraian kegiatan atau PIC..."
+                                class="w-full pl-9 pr-4 py-2 text-sm border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition">
+
+                        </div>
+
+                        {{-- Status --}}
+                        <div class="md:col-span-2">
+
+                            <select name="progres"
+                                class="w-full py-2 px-3 text-sm border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition cursor-pointer">
+
+                                <option value="">Semua Status</option>
+
+                                <option value="selesai" {{ request('progres') == 'selesai' ? 'selected' : '' }}>
+                                    Selesai
+                                </option>
+
+                                <option value="on progress" {{ request('progres') == 'on progress' ? 'selected' : '' }}>
+                                    On Progress
+                                </option>
+
+                                <option value="belum" {{ request('progres') == 'belum' ? 'selected' : '' }}>
+                                    Belum
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        {{-- Tanggal --}}
+                        <div class="md:col-span-2">
+
+                            <input type="date" name="tanggal" value="{{ request('tanggal') }}"
+                                class="w-full py-2 px-3 text-sm border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition">
+
+                        </div>
+
+                        {{-- Button --}}
+                        <div class="md:col-span-3 flex gap-2">
+
+                            <button type="submit"
+                                class="flex-1 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm py-2">
+
+                                <i class="fa-solid fa-filter mr-2"></i>
+                                Filter
+
+                            </button>
+
+                            <a href="{{ route('pelatihans.show', $pelatihan->id) }}"
+                                class="flex-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg text-sm font-semibold flex items-center justify-center transition-colors shadow-sm py-2">
+
+                                Reset
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="flex justify-between items-center mb-6 pt-3 px-6">
+
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">
+                        Uraian Kegiatan
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mt-1">
+                        Daftar uraian kegiatan pelatihan.
+                    </p>
                 </div>
 
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Cari uraian kegiatan atau PIC..."
-                    class="w-full pl-9 pr-4 py-2 text-sm border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition">
+                @auth
+                    @if(auth()->user()->role == 'admin')
+
+                        <a href="{{ route('uraians.create', $pelatihan) }}"
+                            class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm transition">
+
+                            <i class="fa-solid fa-plus"></i>
+
+                            Tambah Data
+
+                        </a>
+
+                    @endif
+                @endauth
 
             </div>
-
-            {{-- Status --}}
-            <div class="md:col-span-2">
-
-                <select
-                    name="progres"
-                    class="w-full py-2 px-3 text-sm border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition cursor-pointer">
-
-                    <option value="">Semua Status</option>
-
-                    <option value="selesai"
-                        {{ request('progres') == 'selesai' ? 'selected' : '' }}>
-                        Selesai
-                    </option>
-
-                    <option value="on progress"
-                        {{ request('progres') == 'on progress' ? 'selected' : '' }}>
-                        On Progress
-                    </option>
-
-                    <option value="belum"
-                        {{ request('progres') == 'belum' ? 'selected' : '' }}>
-                        Belum
-                    </option>
-
-                </select>
-
-            </div>
-
-            {{-- Tanggal --}}
-            <div class="md:col-span-2">
-
-                <input
-                    type="date"
-                    name="tanggal"
-                    value="{{ request('tanggal') }}"
-                    class="w-full py-2 px-3 text-sm border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition">
-
-            </div>
-
-            {{-- Button --}}
-            <div class="md:col-span-3 flex gap-2">
-
-                <button
-                    type="submit"
-                    class="flex-1 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm py-2">
-
-                    <i class="fa-solid fa-filter mr-2"></i>
-                    Filter
-
-                </button>
-
-                <a
-                    href="{{ route('pelatihans.show', $pelatihan->id) }}"
-                    class="flex-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg text-sm font-semibold flex items-center justify-center transition-colors shadow-sm py-2">
-
-                    Reset
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </form>
-
-</div>
-
-        <div class="flex justify-between items-center mb-6 pt-3 px-6">
-
-    <div>
-        <h2 class="text-2xl font-bold text-slate-800">
-            Uraian Kegiatan
-        </h2>
-
-        <p class="text-slate-500 text-sm mt-1">
-            Daftar uraian kegiatan pelatihan.
-        </p>
-    </div>
-
-    @auth
-        @if(auth()->user()->role == 'admin')
-
-            <a href="{{ route('uraians.create', $pelatihan) }}"
-                class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm transition">
-
-                <i class="fa-solid fa-plus"></i>
-
-                Tambah Data
-
-            </a>
-
-        @endif
-    @endauth
-
-</div>
 
             {{-- Table --}}
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-600">
+            <div class="overflow-hidden rounded-lg">
+                <!-- Ubah overflow-x-auto menjadi overflow-hidden jika ingin paksa tanpa scroll -->
+                <table class="w-full text-left text-sm text-slate-600 table-fixed">
                     <thead class="bg-slate-50 text-slate-700 uppercase text-xs font-semibold border-b border-slate-200">
                         <tr>
-                            <th class="px-4 py-3 text-center w-14">No</th>
-                            <th class="px-4 py-3 min-w-[200px]">Uraian Kegiatan</th>
-                            <th class="px-4 py-3 whitespace-nowrap">Tanggal</th>
-                            <th class="px-4 py-3 text-center whitespace-nowrap">Status</th>
-                            <th class="px-4 py-3 whitespace-nowrap">PIC</th>
-                            <th class="px-4 py-3 whitespace-nowrap">Lampiran</th>
-                            <th class="px-4 py-3 min-w-[150px]">Keterangan</th>
+                            <th class="px-2 py-3 text-center w-12">No</th>
+                            <th class="px-3 py-3 w-3/12">Uraian Kegiatan</th>
+                            <th class="px-2 py-3 w-24">Tanggal</th>
+                            <th class="px-2 py-3 text-center w-28">Status</th>
+                            <th class="px-2 py-3 w-24">PIC</th>
+                            <th class="px-3 py-3 w-32">Lampiran</th>
+                            <th class="px-3 py-3 w-2/12">Keterangan</th>
                             @auth
                                 @if(auth()->user()->role == 'admin')
-                                    <th class="px-4 py-3 text-center w-24">Aksi</th>
+                                    <th class="px-2 py-3 text-center w-24">Aksi</th>
                                 @endif
                             @endauth
                         </tr>
@@ -186,165 +180,113 @@
                     <tbody class="divide-y divide-slate-100">
                         @forelse($uraians as $index => $uraian)
                             <tr class="hover:bg-slate-50/70 transition-colors">
-                                {{-- Nomor yang otomatis menyesuaikan pagination --}}
-                                <td class="px-4 py-3 text-center font-medium text-slate-900">
+                                {{-- No --}}
+                                <td class="px-2 py-3 text-center font-medium text-slate-900 align-top">
                                     {{ $uraians->firstItem() + $index }}
                                 </td>
-                                
-                                <td class="px-4 py-3 font-medium text-slate-800">
+
+                                {{-- Uraian Kegiatan --}}
+                                <td class="px-3 py-3 font-medium text-slate-800 align-top">
                                     {{ $uraian->uraian_kegiatan }}
                                 </td>
-                                
-                                <td class="px-4 py-3 whitespace-nowrap text-slate-500">
+
+                                {{-- Tanggal --}}
+                                <td class="px-2 py-3 text-slate-500 text-xs align-top">
                                     {{ \Carbon\Carbon::parse($uraian->tanggal)->format('d M Y') }}
                                 </td>
-                                
-                                <td class="px-4 py-3 text-center whitespace-nowrap">
+
+                                {{-- Status --}}
+                                <td class="px-2 py-3 text-center align-top">
+
                                     @if($uraian->progres == 'selesai')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
+
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
                                             Selesai
                                         </span>
+
+                                        @if($uraian->tanggal_selesai)
+                                            <div class="mt-1 text-[11px] text-slate-500">
+                                                {{ \Carbon\Carbon::parse($uraian->tanggal_selesai)->translatedFormat('d M Y') }}
+                                            </div>
+                                        @endif
+
                                     @elseif($uraian->progres == 'on progress')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20">
+
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20">
                                             On Progress
                                         </span>
+
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10">
+
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10">
                                             Belum
                                         </span>
+
                                     @endif
+
                                 </td>
-                                
-                                <td class="px-4 py-3 whitespace-nowrap font-medium text-slate-700">
+
+                                {{-- PIC --}}
+                                <td class="px-2 py-3 font-medium text-slate-700 text-xs align-top truncate">
                                     {{ $uraian->pic ?? '-' }}
                                 </td>
-                                
-                              <td class="px-4 py-3">
 
-    @if($uraian->lampiran)
+                                {{-- Lampiran --}}
+                                <td class="px-3 py-3 align-top">
+                                    @if($uraian->lampiran)
+                                        <a href="{{ route('uraians.show', $uraian) }}"
+                                            class="inline-flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 transition group max-w-full"
+                                            title="{{ $uraian->lampiran_nama }}">
+                                            <i class="fa-solid {{ $uraian->fileIcon() }} text-sm"></i>
+                                            <span class="text-xs font-semibold truncate max-w-[80px] group-hover:underline">
+                                                {{ $uraian->lampiran_nama }}
+                                            </span>
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400 text-xs italic">-</span>
+                                    @endif
+                                </td>
 
-        <div class="flex items-center justify-between gap-4">
-
-            <a href="{{ route('uraians.show', $uraian) }}"
-               class="flex items-center gap-3 flex-1 hover:text-indigo-600 transition">
-
-                <i class="fa-solid {{ $uraian->fileIcon() }} text-2xl text-indigo-600"></i>
-
-                <div class="overflow-hidden">
-
-                    <p class="font-semibold truncate">
-
-                        {{ $uraian->lampiran_nama }}
-
-                    </p>
-
-                    <p class="text-xs text-slate-500">
-
-                        {{ strtoupper($uraian->lampiran_tipe) }}
-
-                    </p>
-
-                </div>
-
-            </a>
-
-            <div class="flex gap-2">
-
-                <a href="{{ route('uraians.show', $uraian) }}"
-                   class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition"
-                   title="Preview">
-
-                    <i class="fa-solid fa-eye"></i>
-
-                </a>
-
-                <a href="{{ asset('storage/'.$uraian->lampiran) }}"
-                   download
-                   class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-600 hover:text-white transition"
-                   title="Download">
-
-                    <i class="fa-solid fa-download"></i>
-
-                </a>
-
-            </div>
-
-        </div>
-
-    @else
-
-        <span class="text-slate-400 italic">
-
-            -
-
-        </span>
-
-    @endif
-
-</td>
-                                
-                                <td class="px-4 py-3 text-slate-500 truncate max-w-xs" title="{{ $uraian->keterangan }}">
+                                {{-- Keterangan --}}
+                                <td class="px-3 py-3 text-slate-500 text-xs align-top truncate"
+                                    title="{{ $uraian->keterangan }}">
                                     {{ $uraian->keterangan ?? '-' }}
                                 </td>
-                                
+
+                                {{-- Aksi --}}
                                 @auth
                                     @if(auth()->user()->role == 'admin')
-                                        <td class="px-4 py-3">
+                                        <td class="px-2 py-3 align-top">
+                                            <div class="flex justify-center items-center gap-3">
+                                                {{-- Detail --}}
+                                                <a href="{{ route('uraians.show', $uraian) }}"
+                                                    class="text-sky-600 hover:text-sky-800 transition-colors" title="Detail">
+                                                    <i class="fa-solid fa-eye text-sm"></i>
+                                                </a>
 
-    <div class="flex justify-center items-center gap-2">
+                                                {{-- Edit --}}
+                                                <a href="{{ route('uraians.edit', ['pelatihan' => $pelatihan, 'uraian' => $uraian]) }}"
+                                                    class="text-amber-500 hover:text-amber-700 transition-colors" title="Edit">
+                                                    <i class="fa-solid fa-pen text-sm"></i>
+                                                </a>
 
-        {{-- Detail --}}
-        <a href="{{ route('uraians.show', $uraian) }}"
-    class="text-sky-600 hover:text-sky-800"
-    title="Detail">
-
-    <i class="fa-solid fa-eye"></i>
-
-</a>
-
-        @auth
-            @if(auth()->user()->role == 'admin')
-
-                {{-- Edit --}}
-                <a href="{{ route('uraians.edit', [
-    'pelatihan' => $pelatihan,
-    'uraian' => $uraian
-]) }}"
-class="text-amber-500 hover:text-amber-700"
-title="Edit">
-
-    <i class="fa-solid fa-pen"></i>
-
-</a>
-
-                {{-- Hapus --}}
-                <form
-action="{{ route('uraians.destroy',[
-    'pelatihan'=>$pelatihan,
-    'uraian'=>$uraian
-]) }}"
-method="POST"
-onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-
-    @csrf
-    @method('DELETE')
-
-    <button
-        class="text-red-600 hover:text-red-800"
-        title="Hapus">
-
-        <i class="fa-solid fa-trash"></i>
-
-    </button>
-
-</form>
-
-            @endif
-        @endauth
-
-    </div>
-
-</td>
+                                                {{-- Hapus --}}
+                                                <form
+                                                    action="{{ route('uraians.destroy', ['pelatihan' => $pelatihan, 'uraian' => $uraian]) }}"
+                                                    method="POST" class="inline"
+                                                    onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 transition-colors"
+                                                        title="Hapus">
+                                                        <i class="fa-solid fa-trash text-sm"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
                                     @endif
                                 @endauth
                             </tr>

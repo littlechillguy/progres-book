@@ -27,48 +27,58 @@ class UraianController extends Controller
     |--------------------------------------------------------------------------
     */
 
-  public function store(Request $request, Pelatihan $pelatihan)
-{
-    $request->validate([
-        'uraian_kegiatan' => 'required|string',
-        'tanggal'         => 'required|date',
-        'progres'         => 'required|in:belum,on progress,selesai',
-        'pic'             => 'required|string|max:255',
+    public function store(Request $request, Pelatihan $pelatihan)
+    {
+        $request->validate([
+            'uraian_kegiatan' => 'required|string',
+            'tanggal' => 'required|date',
+            'progres' => 'required|in:belum,on progress,selesai',
+            'tanggal_selesai' => 'nullable|date',
+            'pic' => 'required|string|max:255',
 
-        'lampiran'        => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+            'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
 
-        'keterangan'      => 'nullable|string',
-    ]);
+            'keterangan' => 'nullable|string',
+        ]);
 
-    $urutan = Uraian::where('pelatihan_id', $pelatihan->id)
-        ->max('urutan');
+        $urutan = Uraian::where('pelatihan_id', $pelatihan->id)
+            ->max('urutan');
 
-    $data = [
-        'pelatihan_id'    => $pelatihan->id,
-        'urutan'          => $urutan ? $urutan + 1 : 1,
-        'uraian_kegiatan' => $request->uraian_kegiatan,
-        'tanggal'         => $request->tanggal,
-        'progres'         => $request->progres,
-        'pic'             => $request->pic,
-        'keterangan'      => $request->keterangan,
-    ];
+        $data = [
 
-    if ($request->hasFile('lampiran')) {
+            'pelatihan_id' => $pelatihan->id,
+            'urutan' => $urutan ? $urutan + 1 : 1,
+            'uraian_kegiatan' => $request->uraian_kegiatan,
+            'tanggal' => $request->tanggal,
 
-        $file = $request->file('lampiran');
+            'tanggal_selesai' => $request->progres == 'selesai'
+                ? $request->tanggal_selesai
+                : null,
 
-        $data['lampiran'] = $file->store('lampiran', 'public');
-        $data['lampiran_nama'] = $file->getClientOriginalName();
-        $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
+            'progres' => $request->progres,
 
+            'pic' => $request->pic,
+
+            'keterangan' => $request->keterangan,
+
+        ];
+
+        if ($request->hasFile('lampiran')) {
+
+            $file = $request->file('lampiran');
+
+            $data['lampiran'] = $file->store('lampiran', 'public');
+            $data['lampiran_nama'] = $file->getClientOriginalName();
+            $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
+
+        }
+
+        Uraian::create($data);
+
+        return redirect()
+            ->route('pelatihans.show', $pelatihan)
+            ->with('success', 'Uraian berhasil ditambahkan.');
     }
-
-    Uraian::create($data);
-
-    return redirect()
-        ->route('pelatihans.show', $pelatihan)
-        ->with('success', 'Uraian berhasil ditambahkan.');
-}
 
     /*
     |--------------------------------------------------------------------------
@@ -89,49 +99,60 @@ class UraianController extends Controller
     | Update
     |--------------------------------------------------------------------------
     */
-public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
-{
-    $request->validate([
-        'uraian_kegiatan' => 'required|string',
-        'tanggal'         => 'required|date',
-        'progres'         => 'required|in:belum,on progress,selesai',
-        'pic'             => 'required|string|max:255',
+    public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
+    {
+        $request->validate([
+            'uraian_kegiatan' => 'required|string',
+            'tanggal' => 'required|date',
+            'progres' => 'required|in:belum,on progress,selesai',
+            'tanggal_selesai' => 'nullable|date',
+            'pic' => 'required|string|max:255',
 
-        'lampiran'        => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+            'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
 
-        'keterangan'      => 'nullable|string',
-    ]);
+            'keterangan' => 'nullable|string',
+        ]);
 
-    $data = [
-        'uraian_kegiatan' => $request->uraian_kegiatan,
-        'tanggal'         => $request->tanggal,
-        'progres'         => $request->progres,
-        'pic'             => $request->pic,
-        'keterangan'      => $request->keterangan,
-    ];
+        $data = [
 
-    if ($request->hasFile('lampiran')) {
+            'uraian_kegiatan' => $request->uraian_kegiatan,
 
-        if (
-            $uraian->lampiran &&
-            Storage::disk('public')->exists($uraian->lampiran)
-        ) {
-            Storage::disk('public')->delete($uraian->lampiran);
+            'tanggal' => $request->tanggal,
+
+            'tanggal_selesai' => $request->progres == 'selesai'
+                ? $request->tanggal_selesai
+                : null,
+
+            'progres' => $request->progres,
+
+            'pic' => $request->pic,
+
+            'keterangan' => $request->keterangan,
+
+        ];
+
+        if ($request->hasFile('lampiran')) {
+
+            if (
+                $uraian->lampiran &&
+                Storage::disk('public')->exists($uraian->lampiran)
+            ) {
+                Storage::disk('public')->delete($uraian->lampiran);
+            }
+
+            $file = $request->file('lampiran');
+
+            $data['lampiran'] = $file->store('lampiran', 'public');
+            $data['lampiran_nama'] = $file->getClientOriginalName();
+            $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
         }
 
-        $file = $request->file('lampiran');
+        $uraian->update($data);
 
-        $data['lampiran'] = $file->store('lampiran', 'public');
-        $data['lampiran_nama'] = $file->getClientOriginalName();
-        $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
+        return redirect()
+            ->route('pelatihans.show', $pelatihan)
+            ->with('success', 'Uraian berhasil diperbarui.');
     }
-
-    $uraian->update($data);
-
-    return redirect()
-        ->route('pelatihans.show', $pelatihan)
-        ->with('success', 'Uraian berhasil diperbarui.');
-}
     /*
     |--------------------------------------------------------------------------
     | Destroy
@@ -140,25 +161,25 @@ public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
 
     public function destroy(Pelatihan $pelatihan, Uraian $uraian)
     {
-        
-        if (
-    $uraian->lampiran &&
-    Storage::disk('public')->exists($uraian->lampiran)
-) {
-    Storage::disk('public')->delete($uraian->lampiran);
-}
 
-$uraian->delete();
+        if (
+            $uraian->lampiran &&
+            Storage::disk('public')->exists($uraian->lampiran)
+        ) {
+            Storage::disk('public')->delete($uraian->lampiran);
+        }
+
+        $uraian->delete();
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)
             ->with('success', 'Uraian berhasil dihapus.');
     }
 
-  public function show(Uraian $uraian)
-{
-    $uraian->load('pelatihan');
+    public function show(Uraian $uraian)
+    {
+        $uraian->load('pelatihan');
 
-    return view('uraians.show', compact('uraian'));
-}
+        return view('uraians.show', compact('uraian'));
+    }
 }

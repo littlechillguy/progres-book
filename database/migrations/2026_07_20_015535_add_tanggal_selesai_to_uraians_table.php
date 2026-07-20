@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::table('uraians', function (Blueprint $table) {
 
-            $table->string('lampiran')
+            $table->date('tanggal_selesai')
                   ->nullable()
-                  ->after('pic');
+                  ->after('tanggal');
 
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
     {
         Schema::table('uraians', function (Blueprint $table) {
 
-            $table->dropColumn('lampiran');
+            $table->dropColumn('tanggal_selesai');
 
         });
     }

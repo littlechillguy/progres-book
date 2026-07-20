@@ -4,283 +4,272 @@
 
 @section('content')
 
-<div class="space-y-8">
+    <div class="space-y-8">
 
-    {{-- Header --}}
-    <div class="flex flex-col lg:flex-row justify-between lg:items-center gap-4">
-
-        <div>
-
-            <h1 class="text-3xl font-bold text-slate-800">
-                Dashboard Progress Pelatihan
-            </h1>
-
-            <p class="text-slate-500 mt-2">
-                Monitoring pelaksanaan seluruh kegiatan pelatihan secara real-time.
-            </p>
-
-        </div>
-
-    </div>
-
-    {{-- Statistik --}}
-
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-
-        <div class="bg-white rounded-2xl shadow border border-slate-100 p-6">
-
-            <div class="flex justify-between items-center">
-
-                <div>
-
-                    <p class="text-sm text-slate-500">
-                        Total Pelatihan
-                    </p>
-
-                    <h2 class="text-4xl font-bold text-slate-800 mt-2">
-                        {{ $pelatihans->count() }}
-                    </h2>
-
-                </div>
-
-                <div class="w-14 h-14 rounded-xl bg-indigo-100 flex items-center justify-center">
-
-                    <i class="fa-solid fa-graduation-cap text-indigo-600 text-xl"></i>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="bg-white rounded-2xl shadow border border-slate-100 p-6">
-
-            <div class="flex justify-between items-center">
-
-                <div>
-
-                    <p class="text-sm text-slate-500">
-                        Total Kegiatan
-                    </p>
-
-                    <h2 class="text-4xl font-bold text-slate-800 mt-2">
-                        {{ $totalKegiatanGlobal }}
-                    </h2>
-
-                </div>
-
-                <div class="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
-
-                    <i class="fa-solid fa-list-check text-blue-600 text-xl"></i>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="bg-white rounded-2xl shadow border border-slate-100 p-6">
-
-            <div class="flex justify-between items-center">
-
-                <div>
-
-                    <p class="text-sm text-slate-500">
-                        Total Selesai
-                    </p>
-
-                    <h2 class="text-4xl font-bold text-green-600 mt-2">
-                        {{ $totalSelesaiGlobal }}
-                    </h2>
-
-                </div>
-
-                <div class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center">
-
-                    <i class="fa-solid fa-circle-check text-green-600 text-xl"></i>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="bg-white rounded-2xl shadow border border-slate-100 p-6">
-
-            <div class="flex justify-between items-center">
-
-                <div>
-
-                    <p class="text-sm text-slate-500">
-                        Progress Keseluruhan
-                    </p>
-
-                    <h2 class="text-4xl font-bold text-orange-500 mt-2">
-                        {{ $persenGlobal }}%
-                    </h2>
-
-                </div>
-
-                <div class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center">
-
-                    <i class="fa-solid fa-chart-line text-orange-600 text-xl"></i>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    {{-- Table --}}
-
-    <div class="bg-white rounded-2xl shadow border border-slate-100 overflow-hidden">
-
-        <div class="px-6 py-5 border-b flex justify-between items-center">
-
+        {{-- Header --}}
+        <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
             <div>
+                <h1 class="text-4xl font-black text-slate-800">
+                    Dashboard PRO-BOOK
+                </h1>
+                <p class="text-slate-500 mt-2">
+                    Monitoring seluruh progres pelaksanaan pelatihan pegawai.
+                </p>
+            </div>
 
-                <h2 class="font-bold text-lg text-slate-800">
-                    Daftar Pelatihan
+            <form method="GET">
+                <select name="tahun" onchange="this.form.submit()" class="rounded-xl border-slate-300 shadow-sm">
+                    @for($i = date('Y'); $i >= 2024; $i--)
+                        <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
+                            Tahun {{ $i }}
+                        </option>
+                    @endfor
+                </select>
+            </form>
+        </div>
+
+        {{-- Statistik --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+            <div class="bg-white rounded-2xl shadow p-6">
+                <p class="text-slate-500">Total Pelatihan</p>
+                <h2 class="text-4xl font-bold mt-3">
+                    {{ $pelatihans->count() }}
+                </h2>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow p-6">
+                <p class="text-slate-500">Total Kegiatan</p>
+                <h2 class="text-4xl font-bold mt-3 text-indigo-600">
+                    {{ $totalKegiatanGlobal }}
+                </h2>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow p-6">
+                <p class="text-slate-500">Total Selesai</p>
+                <h2 class="text-4xl font-bold mt-3 text-green-600">
+                    {{ $totalSelesaiGlobal }}
+                </h2>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow p-6">
+                <p class="text-slate-500">Progress Global</p>
+                <h2 class="text-4xl font-bold mt-3 text-orange-500">
+                    {{ $persenGlobal }}%
+                </h2>
+            </div>
+
+        </div>
+
+        {{-- Grafik --}}
+        <div class="grid lg:grid-cols-3 gap-6">
+
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
+
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold">
+                        Penyelesaian Uraian Per Bulan
+                    </h2>
+                    <p class="text-slate-500">
+                        Tahun {{ $tahun }}
+                    </p>
+                </div>
+
+                <canvas id="chartBulanan" height="110"></canvas>
+
+            </div>
+
+            {{-- Ringkasan --}}
+            <div class="bg-white rounded-2xl shadow p-6">
+
+                <h2 class="text-xl font-bold mb-6">
+                    Ringkasan
                 </h2>
 
-                <p class="text-sm text-slate-500">
+                <div class="space-y-6">
 
-                    Klik nama pelatihan untuk melihat detail progres.
+                    <div>
+                        <p class="text-slate-500 text-sm">
+                            Total Selesai Tahun Ini
+                        </p>
+                        <h3 class="text-4xl font-bold text-green-600">
+                            {{ $totalSelesaiTahun }}
+                        </h3>
+                    </div>
 
-                </p>
+                    <div>
+                        <p class="text-slate-500 text-sm">
+                            Rata-rata / Bulan
+                        </p>
+                        <h3 class="text-4xl font-bold text-indigo-600">
+                            {{ $rataPerBulan }}
+                        </h3>
+                    </div>
+
+                    <div>
+                        <p class="text-slate-500 text-sm">
+                            Bulan Terbaik
+                        </p>
+                        <h3 class="text-4xl font-bold text-orange-500">
+                            {{ $bulanTerbaik }}
+                        </h3>
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-        <div class="overflow-x-auto">
+        {{-- Donut + Top Progress + Aktivitas --}}
+        <div class="grid lg:grid-cols-3 gap-6">
 
-            <table class="w-full">
+            {{-- Donut Chart --}}
+            <div class="bg-white rounded-2xl shadow p-6">
 
-                <thead class="bg-slate-50">
+                <h2 class="text-xl font-bold mb-5">
+                    Status Uraian
+                </h2>
 
-                    <tr class="text-xs uppercase text-slate-500">
+                <canvas id="statusChart"></canvas>
 
-                        <th class="py-4 px-5 text-center">No</th>
-                        <th class="py-4 px-5">Nama Pelatihan</th>
-                        <th class="py-4 px-5">Tahapan</th>
-                        <th class="py-4 px-5">Hari / Tanggal</th>
-                        <th class="py-4 px-5">Tempat</th>
-                        <th class="py-4 px-5">Progress</th>
-                        <th class="py-4 px-5">Status</th>
+            </div>
 
-                    </tr>
+            {{-- Top Progress Terendah --}}
+            <div class="bg-white rounded-2xl shadow p-6">
 
-                </thead>
+                <h2 class="text-xl font-bold mb-5">
+                    Top 5 Progress Terendah
+                </h2>
 
-                <tbody class="divide-y">
+                <div class="space-y-4">
 
-                @forelse($pelatihans as $pelatihan)
+                    @foreach($topPelatihan as $item)
 
-                    <tr class="hover:bg-slate-50">
+                        <div>
 
-                        <td class="text-center py-4">
+                            <div class="flex justify-between mb-1">
 
-                            {{ $loop->iteration }}
+                                <span class="font-medium">
+                                    {{ $item->nama_pelatihan }}
+                                </span>
 
-                        </td>
-
-                        <td class="px-5">
-
-                            <a href="{{ route('pelatihans.show',$pelatihan) }}"
-                                class="font-semibold text-indigo-600 hover:underline">
-
-                                {{ $pelatihan->nama_pelatihan }}
-
-                            </a>
-
-                        </td>
-
-                        <td>
-
-                            {{ $pelatihan->tahapan }}
-
-                        </td>
-
-                        <td>
-
-                            {{ $pelatihan->hari }}
-
-                            <br>
-
-                            <small class="text-slate-500">
-
-                                {{ \Carbon\Carbon::parse($pelatihan->tanggal)->translatedFormat('d F Y') }}
-
-                            </small>
-
-                        </td>
-
-                        <td>
-
-                            {{ $pelatihan->tempat }}
-
-                        </td>
-
-                        <td class="w-72">
-
-                            <div class="flex items-center gap-3">
-
-                                <div class="w-full bg-slate-200 rounded-full h-3">
-
-                                    <div
-                                        class="bg-indigo-600 h-3 rounded-full"
-                                        style="width: {{ $pelatihan->persen }}%">
-                                    </div>
-
-                                </div>
-
-                                <span class="font-bold text-sm">
-
-                                    {{ $pelatihan->persen }}%
-
+                                <span class="font-semibold">
+                                    {{ $item->persen }}%
                                 </span>
 
                             </div>
 
-                        </td>
+                            <div class="w-full bg-slate-200 rounded-full h-2">
 
-                        <td>
+                                <div class="bg-red-500 h-2 rounded-full" style="width: {{ $item->persen }}%">
+                                </div>
 
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $pelatihan->status_color }}">
+                            </div>
 
-                                {{ $pelatihan->status_label }}
+                        </div>
 
-                            </span>
+                    @endforeach
 
-                        </td>
+                </div>
 
-                    </tr>
+            </div>
 
-                @empty
+            {{-- Aktivitas Terbaru --}}
+            <div class="bg-white rounded-2xl shadow p-6">
 
-                    <tr>
+                <h2 class="text-xl font-bold mb-5">
+                    Aktivitas Terbaru
+                </h2>
 
-                        <td colspan="7" class="py-12 text-center text-slate-400">
+                <div class="space-y-4">
 
-                            Belum ada data pelatihan.
+                    @foreach($aktivitasTerbaru as $item)
 
-                        </td>
+                        <div class="border-b pb-3">
 
-                    </tr>
+                            <p class="font-semibold">
+                                {{ $item->uraian_kegiatan }}
+                            </p>
 
-                @endforelse
+                            <p class="text-sm text-slate-500">
+                                {{ $item->pelatihan->nama_pelatihan }}
+                            </p>
 
-                </tbody>
+                            <p class="text-xs text-slate-400">
+                                {{ $item->created_at->diffForHumans() }}
+                            </p>
 
-            </table>
+                        </div>
+
+                    @endforeach
+
+                </div>
+
+            </div>
 
         </div>
 
-    </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-</div>
+        <script>
+            const ctx = document.getElementById('chartBulanan');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: @json($chartLabels),
+                    datasets: [{
+                        label: 'Uraian Selesai',
+                        data: @json($chartData),
+                        backgroundColor: '#4F46E5',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            const status = document.getElementById('statusChart');
+
+            new Chart(status, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Belum', 'On Progress', 'Selesai'],
+                    datasets: [{
+                        data: [
+                    {{ $statusChart['belum'] }},
+                    {{ $statusChart['progress'] }},
+                            {{ $statusChart['selesai'] }}
+                        ],
+                        backgroundColor: [
+                            '#ef4444',
+                            '#f59e0b',
+                            '#10b981'
+                        ]
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        </script>
 
 @endsection
