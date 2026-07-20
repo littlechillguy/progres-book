@@ -6,7 +6,7 @@ use App\Models\Pelatihan;
 use App\Models\Uraian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use App\Services\ActivityLogger;
 
 class UraianController extends Controller
 {
@@ -35,45 +35,43 @@ class UraianController extends Controller
             'progres' => 'required|in:belum,on progress,selesai',
             'tanggal_selesai' => 'nullable|date',
             'pic' => 'required|string|max:255',
-
             'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
-
             'keterangan' => 'nullable|string',
         ]);
 
-        $urutan = Uraian::where('pelatihan_id', $pelatihan->id)
-            ->max('urutan');
+        $urutan = Uraian::where('pelatihan_id', $pelatihan->id)->max('urutan');
 
         $data = [
-
             'pelatihan_id' => $pelatihan->id,
             'urutan' => $urutan ? $urutan + 1 : 1,
             'uraian_kegiatan' => $request->uraian_kegiatan,
             'tanggal' => $request->tanggal,
-
             'tanggal_selesai' => $request->progres == 'selesai'
                 ? $request->tanggal_selesai
                 : null,
-
             'progres' => $request->progres,
-
             'pic' => $request->pic,
-
             'keterangan' => $request->keterangan,
-
         ];
 
         if ($request->hasFile('lampiran')) {
-
             $file = $request->file('lampiran');
 
             $data['lampiran'] = $file->store('lampiran', 'public');
             $data['lampiran_nama'] = $file->getClientOriginalName();
             $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
-
         }
 
-        Uraian::create($data);
+      $uraian = Uraian::create($data);
+
+ActivityLogger::log(
+    'Uraian',
+    'Tambah',
+    $uraian->id,
+    'Menambahkan uraian "' . $uraian->uraian_kegiatan . '"',
+    [],
+    $uraian->toArray()
+);
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)
@@ -88,10 +86,7 @@ class UraianController extends Controller
 
     public function edit(Pelatihan $pelatihan, Uraian $uraian)
     {
-        return view('uraians.edit', compact(
-            'pelatihan',
-            'uraian'
-        ));
+        return view('uraians.edit', compact('pelatihan', 'uraian'));
     }
 
     /*
@@ -99,6 +94,7 @@ class UraianController extends Controller
     | Update
     |--------------------------------------------------------------------------
     */
+
     public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
     {
         $request->validate([
@@ -107,28 +103,19 @@ class UraianController extends Controller
             'progres' => 'required|in:belum,on progress,selesai',
             'tanggal_selesai' => 'nullable|date',
             'pic' => 'required|string|max:255',
-
             'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
-
             'keterangan' => 'nullable|string',
         ]);
 
         $data = [
-
             'uraian_kegiatan' => $request->uraian_kegiatan,
-
             'tanggal' => $request->tanggal,
-
             'tanggal_selesai' => $request->progres == 'selesai'
                 ? $request->tanggal_selesai
                 : null,
-
             'progres' => $request->progres,
-
             'pic' => $request->pic,
-
             'keterangan' => $request->keterangan,
-
         ];
 
         if ($request->hasFile('lampiran')) {
@@ -147,12 +134,24 @@ class UraianController extends Controller
             $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
         }
 
-        $uraian->update($data);
+       $old = $uraian->toArray();
+
+$uraian->update($data);
+
+ActivityLogger::log(
+    'Uraian',
+    'Edit',
+    $uraian->id,
+    'Mengubah uraian "' . $uraian->uraian_kegiatan . '"',
+    $old,
+    $uraian->fresh()->toArray()
+);
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)
             ->with('success', 'Uraian berhasil diperbarui.');
     }
+
     /*
     |--------------------------------------------------------------------------
     | Destroy
@@ -161,6 +160,7 @@ class UraianController extends Controller
 
     public function destroy(Pelatihan $pelatihan, Uraian $uraian)
     {
+        $namaUraian = $uraian->uraian_kegiatan;
 
         if (
             $uraian->lampiran &&
@@ -168,13 +168,29 @@ class UraianController extends Controller
         ) {
             Storage::disk('public')->delete($uraian->lampiran);
         }
+        
+$old = $uraian->toArray();
 
-        $uraian->delete();
+ActivityLogger::log(
+    'Uraian',
+    'Hapus',
+    $uraian->id,
+    'Menghapus uraian "' . $uraian->uraian_kegiatan . '"',
+    $old
+);
+
+$uraian->delete();
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)
             ->with('success', 'Uraian berhasil dihapus.');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show
+    |--------------------------------------------------------------------------
+    */
 
     public function show(Uraian $uraian)
     {

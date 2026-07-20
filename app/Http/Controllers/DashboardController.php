@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelatihan;
 use App\Models\Uraian;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -64,20 +65,14 @@ class DashboardController extends Controller
             }
 
             if ($persen >= 80) {
-
                 $status = 'Baik';
                 $statusColor = 'bg-green-100 text-green-800 border-green-200';
-
             } elseif ($persen >= 50) {
-
                 $status = 'Perlu Perhatian';
                 $statusColor = 'bg-yellow-100 text-yellow-800 border-yellow-200';
-
             } else {
-
                 $status = 'Kritis';
                 $statusColor = 'bg-red-100 text-red-800 border-red-200';
-
             }
 
             $pelatihan->total_kegiatan = $total;
@@ -113,30 +108,16 @@ class DashboardController extends Controller
             ->groupBy('bulan')
             ->pluck('total', 'bulan');
 
+        $chartLabels = [
+            'Jan','Feb','Mar','Apr','Mei','Jun',
+            'Jul','Agu','Sep','Okt','Nov','Des'
+        ];
+
         $chartData = [];
 
         for ($i = 1; $i <= 12; $i++) {
-
             $chartData[] = $hasil[$i] ?? 0;
-
         }
-
-        $chartLabels = [
-
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'Mei',
-            'Jun',
-            'Jul',
-            'Agu',
-            'Sep',
-            'Okt',
-            'Nov',
-            'Des',
-
-        ];
 
         /*
         |--------------------------------------------------------------------------
@@ -153,12 +134,14 @@ class DashboardController extends Controller
         $bulanTerbaik = '-';
 
         if ($nilaiTertinggi > 0) {
-
-            $index = array_search($nilaiTertinggi, $chartData);
-
-            $bulanTerbaik = $chartLabels[$index];
-
+            $bulanTerbaik = $chartLabels[array_search($nilaiTertinggi, $chartData)];
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Donut Chart
+        |--------------------------------------------------------------------------
+        */
 
         $statusChart = [
             'belum' => Uraian::where('progres', 'belum')->count(),
@@ -166,13 +149,24 @@ class DashboardController extends Controller
             'selesai' => Uraian::where('progres', 'selesai')->count(),
         ];
 
+        /*
+        |--------------------------------------------------------------------------
+        | Top 5 Pelatihan
+        |--------------------------------------------------------------------------
+        */
+
         $topPelatihan = $pelatihans
-            ->sortBy('persen')
+            ->sortByDesc('persen')
             ->take(5);
 
-        $aktivitasTerbaru = Uraian::with('pelatihan')
-            ->latest()
-            ->take(5)
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        $activities = ActivityLog::latest()
+            ->take(10)
             ->get();
 
         /*
@@ -197,7 +191,8 @@ class DashboardController extends Controller
 
             'statusChart',
             'topPelatihan',
-            'aktivitasTerbaru'
+
+            'activities'
         ));
     }
 }
