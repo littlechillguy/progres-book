@@ -1,11 +1,12 @@
 <aside class="sticky top-0 h-screen w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col">
 
     {{-- Logo --}}
-<div class="h-24 flex items-center px-6 pt-4 pb-3 border-b border-slate-800 bg-slate-950/40">
-    
+    <div class="h-24 flex items-center px-6 pt-4 pb-3 border-b border-slate-800 bg-slate-950/40">
+
         <div class="flex items-center gap-3">
 
-            <div class="w-11 h-11 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
+            <div
+                class="w-11 h-11 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
 
                 <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
 
@@ -62,6 +63,19 @@
 
             </a>
 
+            {{-- Activity Log --}}
+            <a href="{{ route('activity-log.index') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition
+    {{ request()->routeIs('activity-log.*') ? 'bg-indigo-600 text-white shadow' : 'hover:bg-slate-800 hover:text-white' }}">
+
+                <i class="fa-solid fa-clock-rotate-left w-5"></i>
+
+                <span class="font-medium">
+                    Activity Log
+                </span>
+
+            </a>
+
         </div>
 
         {{-- ========================= --}}
@@ -84,7 +98,7 @@
 
                         @foreach($favoritPelatihans as $item)
 
-                            <a href="{{ route('pelatihans.show',$item) }}"
+                            <a href="{{ route('pelatihans.show', $item) }}"
                                 class="flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 hover:text-white">
 
                                 <i class="fa-solid fa-star text-yellow-400"></i>
@@ -120,7 +134,7 @@
 
                     <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
 
-                        {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
 
                     </div>
 
@@ -146,8 +160,7 @@
 
                     @csrf
 
-                    <button
-                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">
+                    <button class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">
 
                         <i class="fa-solid fa-right-from-bracket mr-2"></i>
 

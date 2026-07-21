@@ -165,9 +165,10 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $activities = ActivityLog::latest()
-            ->take(10)
-            ->get();
+        $activities = ActivityLog::with('user')
+    ->latest()
+    ->take(5)
+    ->get();
 
         /*
         |--------------------------------------------------------------------------

@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UraianController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ActivityLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,6 +107,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
+    Route::get('/activity-log', [ActivityLogController::class, 'index'])
+    ->name('activity-log.index');
 
 });
 
