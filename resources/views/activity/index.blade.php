@@ -96,26 +96,3 @@
 
 @endsection
 
-@auth
-
-@if(auth()->user()->role == 'superadmin')
-
-<a href="{{ route('users.index') }}"
-class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-{{ request()->routeIs('users.*')
-? 'bg-indigo-600 text-white shadow'
-: 'hover:bg-slate-800 hover:text-white' }}">
-
-<i class="fa-solid fa-users"></i>
-
-<span>
-
-Kelola Akun
-
-</span>
-
-</a>
-
-@endif
-
-@endauth
