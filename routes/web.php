@@ -6,6 +6,7 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UraianController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,8 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pelatihans/{pelatihan}', [PelatihanController::class, 'destroy'])
         ->name('pelatihans.destroy');
 
-    Route::patch('/pelatihans/{pelatihan}/favorite',[PelatihanController::class,'favorite']
-        )->name('pelatihans.favorite');
+    Route::patch(
+        '/pelatihans/{pelatihan}/favorite',
+        [PelatihanController::class, 'favorite']
+    )->name('pelatihans.favorite');
 
 });
 
@@ -109,7 +112,24 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 
     Route::get('/activity-log', [ActivityLogController::class, 'index'])
-    ->name('activity-log.index');
+        ->name('activity-log.index');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Kelola User (Super Admin)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'superadmin'])->group(function () {
+
+    Route::resource('users', UserController::class);
+
+    Route::patch(
+        '/users/{user}/reset-password',
+        [UserController::class, 'resetPassword']
+    )->name('users.reset-password');
 
 });
 
@@ -119,4 +139,4 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

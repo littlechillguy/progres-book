@@ -12,22 +12,22 @@ class AdminSeeder extends Seeder
     {
         User::updateOrCreate(
             [
-                'email' => 'rasya@probook.com'
+                'email' => 'rasya@probook.com',
             ],
             [
                 'name' => 'Rasya',
-                'password' => Hash::make('rasya123'),
-                'role' => 'admin',
+                'password' => Hash::make('admin123'),
+                'role' => 'superadmin',
             ]
         );
 
         User::updateOrCreate(
             [
-                'email' => 'dzakwan@probook.com'
+                'email' => 'dzakwan@probook.com',
             ],
             [
                 'name' => 'Dzakwan',
-                'password' => Hash::make('dzakwan123'),
+                'password' => Hash::make('admin123'),
                 'role' => 'admin',
             ]
         );
