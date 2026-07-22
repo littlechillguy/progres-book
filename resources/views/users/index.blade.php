@@ -4,135 +4,204 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto space-y-6 pb-10">
+<div class="space-y-6 pb-12">
 
-    {{-- 1. Header & Tombol Tambah --}}
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-slate-200 pb-5">
-        <div>
-            <h1 class="text-3xl font-black text-slate-800 tracking-tight">
-                Kelola Akun
-            </h1>
-            <p class="text-slate-500 mt-1 font-medium">
-                Daftar seluruh administrator PRO-BOOK.
-            </p>
+    {{-- 1. Header & Quick Action Card --}}
+    <div class="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm relative overflow-hidden">
+        {{-- Accent Background Gradient Blur --}}
+        <div class="absolute -right-10 -top-10 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold rounded-lg text-[10px] tracking-wide inline-block">
+                        User Management
+                    </span>
+                </div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">
+                    Kelola <span class="text-indigo-600">Akun</span>
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Daftar seluruh administrator dan hak akses pengguna sistem PRO-BOOK.
+                </p>
+            </div>
+
+            <a href="{{ route('users.create') }}"
+               class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all duration-200 active:scale-95 shrink-0">
+                <i class="fa-solid fa-plus text-[10px]"></i>
+                <span>Tambah Admin</span>
+            </a>
         </div>
-        
-        <a href="{{ route('users.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm hover:shadow-indigo-200 hover:-translate-y-0.5 transition-all">
-            <i class="fa-solid fa-plus text-sm"></i>
-            Tambah Admin
-        </a>
     </div>
 
-    {{-- 2. Card Pembungkus Tabel & Pencarian --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        
-        {{-- Table Header / Toolbar --}}
-        <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h2 class="font-bold text-slate-700 hidden sm:block">Data Administrator</h2>
-            
-            <form method="GET" class="w-full sm:w-80 relative group">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-                    <i class="fa-solid fa-magnifying-glass text-slate-400 group-hover:text-indigo-500 transition-colors"></i>
+    {{-- 2. Toolbar Pencarian & Filter --}}
+    <div class="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
+        <form method="GET" action="{{ route('users.index') }}">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="w-full sm:w-80 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-xs">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..."
+                           class="w-full pl-9 pr-4 py-2 bg-slate-50/60 border border-slate-200/80 text-slate-700 text-xs font-semibold rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400">
                 </div>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..."
-                    class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 text-sm font-medium rounded-xl shadow-sm focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all group-hover:border-indigo-300">
-            </form>
-        </div>
 
-        {{-- Table Content --}}
-        <div class="overflow-x-auto">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="submit"
+                            class="flex-1 sm:flex-none px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-filter text-[10px]"></i>
+                        <span>Cari</span>
+                    </button>
+
+                    @if(request('search'))
+                        <a href="{{ route('users.index') }}" 
+                           class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition-all duration-200 flex items-center justify-center border border-slate-200/60 active:scale-95"
+                           title="Reset Pencarian">
+                            <i class="fa-solid fa-rotate-left text-[11px]"></i>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {{-- 3. Tabel Administrator --}}
+    <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-wider">
-                        <th class="px-6 py-4 font-bold">Nama</th>
-                        <th class="px-6 py-4 font-bold">Email</th>
-                        <th class="px-6 py-4 font-bold text-center">Role</th>
-                        <th class="px-6 py-4 font-bold text-right">Aksi</th>
+                    <tr class="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <th class="py-3.5 px-6 min-w-[200px]">Pengguna</th>
+                        <th class="py-3.5 px-6 min-w-[200px]">Email</th>
+                        <th class="py-3.5 px-6 text-center whitespace-nowrap w-36">Role</th>
+                        <th class="py-3.5 px-6 text-center whitespace-nowrap w-36">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-700">
                     @forelse($users as $user)
-                        <tr class="hover:bg-slate-50/80 transition-colors group">
-                            <td class="px-6 py-4">
+                        <tr class="hover:bg-slate-50/60 transition-colors group">
+                            
+                            {{-- Nama & Avatar Initial --}}
+                            <td class="py-4 px-6 align-middle">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold uppercase">
+                                    <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 font-black text-xs flex items-center justify-center uppercase shrink-0 shadow-2xs">
                                         {{ substr($user->name, 0, 1) }}
                                     </div>
-                                    <span class="font-bold text-slate-800">{{ $user->name }}</span>
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-slate-800 text-xs leading-snug">
+                                            {{ $user->name }}
+                                        </span>
+                                        @if(auth()->id() == $user->id)
+                                            <span class="text-[10px] text-indigo-600 font-bold">(Akun Anda)</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-slate-500 font-medium text-sm">
+
+                            {{-- Email --}}
+                            <td class="py-4 px-6 text-slate-500 font-semibold align-middle">
                                 {{ $user->email }}
                             </td>
-                            <td class="px-6 py-4 text-center">
+
+                            {{-- Role Badge --}}
+                            <td class="py-4 px-6 text-center whitespace-nowrap align-middle">
                                 @if($user->role == 'superadmin')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-50 text-violet-700 text-xs font-bold ring-1 ring-inset ring-violet-200/50">
-                                        <i class="fa-solid fa-shield-halved"></i> Super Admin
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-100">
+                                        <i class="fa-solid fa-shield-halved text-[9px]"></i>
+                                        <span>Super Admin</span>
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-bold ring-1 ring-inset ring-sky-200/50">
-                                        <i class="fa-solid fa-user-shield"></i> Admin
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-100">
+                                        <i class="fa-solid fa-user-shield text-[9px]"></i>
+                                        <span>Admin</span>
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-right space-x-1.5">
-                                {{-- Edit Button --}}
-                                <a href="{{ route('users.edit', $user) }}" title="Edit Data"
-                                    class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white transition-colors">
-                                    <i class="fa-solid fa-pen text-sm"></i>
-                                </a>
 
-                                {{-- Reset Password Button --}}
-                                <form action="{{ route('users.reset-password', $user) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" onclick="return confirm('Reset password menjadi admin123?')" title="Reset Password"
-                                        class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-600 hover:text-white transition-colors">
-                                        <i class="fa-solid fa-key text-sm"></i>
-                                    </button>
-                                </form>
+                            {{-- Actions --}}
+                            <td class="py-4 px-6 text-center whitespace-nowrap align-middle">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    {{-- Edit --}}
+                                    <a href="{{ route('users.edit', $user) }}" 
+                                       class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all shadow-2xs" 
+                                       title="Edit Data">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    </a>
 
-                                {{-- Delete Button --}}
-                                @if(auth()->id() != $user->id)
-                                    <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline">
+                                    {{-- Reset Password --}}
+                                    <form action="{{ route('users.reset-password', $user) }}" method="POST" class="inline">
                                         @csrf
-                                        @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus akun ini?')" title="Hapus Akun"
-                                            class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-red-50 text-red-500 hover:bg-red-600 hover:text-white transition-colors">
-                                            <i class="fa-solid fa-trash text-sm"></i>
+                                        @method('PATCH')
+                                        <button type="submit" 
+                                                onclick="return confirm('Reset password akun ini menjadi admin123?')" 
+                                                class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-500 hover:text-white flex items-center justify-center transition-all shadow-2xs" 
+                                                title="Reset Password">
+                                            <i class="fa-solid fa-key text-xs"></i>
                                         </button>
                                     </form>
-                                @else
-                                    {{-- Placeholder kosong jika itu akun sendiri agar tombol sejajar --}}
-                                    <div class="inline-flex w-9 h-9"></div>
-                                @endif
+
+                                    {{-- Delete --}}
+                                    @if(auth()->id() != $user->id)
+                                        <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline"
+                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all shadow-2xs" 
+                                                    title="Hapus Akun">
+                                                <i class="fa-solid fa-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        {{-- Spacer pembantu agar alignment tetap rata --}}
+                                        <div class="w-8 h-8"></div>
+                                    @endif
+                                </div>
                             </td>
+
                         </tr>
                     @empty
-                        {{-- Tampilan saat data kosong / tidak ditemukan --}}
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center">
-                                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <i class="fa-solid fa-magnifying-glass text-xl text-slate-300"></i>
+                            <td colspan="4" class="py-12 text-center bg-white">
+                                <div class="max-w-xs mx-auto text-center space-y-2">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-lg shadow-inner">
+                                        <i class="fa-solid fa-user-slash"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-700">Data tidak ditemukan</p>
+                                    <p class="text-[11px] text-slate-400">Belum ada akun admin atau kata kunci pencarian Anda tidak cocok.</p>
                                 </div>
-                                <h3 class="text-slate-800 font-bold mb-1">Data tidak ditemukan</h3>
-                                <p class="text-slate-500 text-sm">Belum ada akun admin atau pencarian tidak cocok.</p>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        
-        {{-- Paginasi (opsional jika `$users` menggunakan paginate) --}}
+
+        {{-- Pagination --}}
         @if(method_exists($users, 'links') && $users->hasPages())
-            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-                {{ $users->links() }}
+            <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                {{ $users->withQueryString()->links() }}
             </div>
         @endif
-
     </div>
 
 </div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 5px;
+        width: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e2e8f0;
+        border-radius: 10px;
+    }
+    .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+    }
+</style>
 
 @endsection
