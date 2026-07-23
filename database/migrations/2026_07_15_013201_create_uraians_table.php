@@ -9,13 +9,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('uraians', function (Blueprint $table) {
+
             $table->id();
 
             $table->foreignId('pelatihan_id')
                   ->constrained()
                   ->cascadeOnDelete();
 
-           $table->unsignedInteger('urutan');
+            $table->unsignedInteger('urutan');
+
+            // Tahapan
+            $table->enum('tahapan', [
+                'Persiapan',
+                'Pelaksanaan',
+                'Evaluasi'
+            ]);
 
             $table->text('uraian_kegiatan');
 
@@ -27,9 +35,13 @@ return new class extends Migration
                 'selesai'
             ])->default('belum');
 
+            $table->date('tanggal_selesai')->nullable();
+
             $table->string('pic')->nullable();
 
-            $table->text('link')->nullable();
+            $table->string('lampiran')->nullable();
+            $table->string('lampiran_nama')->nullable();
+            $table->string('lampiran_tipe')->nullable();
 
             $table->text('keterangan')->nullable();
 

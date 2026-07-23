@@ -50,6 +50,10 @@ class PelatihanController extends Controller
 
             })
 
+            ->when($request->filled('tahapan'), function ($query) use ($request) {
+                $query->where('tahapan', $request->tahapan);
+            })
+
             ->when($request->filled('progres'), function ($query) use ($request) {
 
                 $query->where('progres', $request->progres);
@@ -70,10 +74,10 @@ class PelatihanController extends Controller
 
         return view('uraians.index', [
             'pelatihan' => $pelatihan,
-            'uraians'   => $uraians,
-            'total'     => $pelatihan->total_kegiatan,
-            'selesai'   => $pelatihan->total_selesai,
-            'progress'  => $pelatihan->persen,
+            'uraians' => $uraians,
+            'total' => $pelatihan->total_kegiatan,
+            'selesai' => $pelatihan->total_selesai,
+            'progress' => $pelatihan->persen,
         ]);
     }
 
@@ -82,32 +86,32 @@ class PelatihanController extends Controller
         return view('pelatihans.create');
     }
 
-   public function store(Request $request)
-{
-    $validated = $request->validate([
-        'nama_pelatihan' => 'required|max:255',
-        'tahapan'        => 'required|max:100',
-        'kegiatan'       => 'required|max:255',
-        'hari'           => 'required|max:50',
-        'tanggal'        => 'required|date',
-        'tempat'         => 'required|max:255',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_pelatihan' => 'required|max:255',
+            'tahapan' => 'required|max:100',
+            'kegiatan' => 'required|max:255',
+            'hari' => 'required|max:50',
+            'tanggal' => 'required|date',
+            'tempat' => 'required|max:255',
+        ]);
 
-    $pelatihan = Pelatihan::create($validated);
+        $pelatihan = Pelatihan::create($validated);
 
-    ActivityLogger::log(
-        'Pelatihan',
-        'Tambah',
-        $pelatihan->id,
-        'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '"',
-        [],
-        $pelatihan->toArray()
-    );
+        ActivityLogger::log(
+            'Pelatihan',
+            'Tambah',
+            $pelatihan->id,
+            'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '"',
+            [],
+            $pelatihan->toArray()
+        );
 
-    return redirect()
-        ->route('pelatihans.index')
-        ->with('success', 'Pelatihan berhasil ditambahkan.');
-}
+        return redirect()
+            ->route('pelatihans.index')
+            ->with('success', 'Pelatihan berhasil ditambahkan.');
+    }
 
     public function edit(Pelatihan $pelatihan)
     {
@@ -115,53 +119,53 @@ class PelatihanController extends Controller
     }
 
     public function update(Request $request, Pelatihan $pelatihan)
-{
-    $validated = $request->validate([
-        'nama_pelatihan' => 'required|max:255',
-        'tahapan'        => 'required|max:100',
-        'kegiatan'       => 'required|max:255',
-        'hari'           => 'required|max:50',
-        'tanggal'        => 'required|date',
-        'tempat'         => 'required|max:255',
-    ]);
+    {
+        $validated = $request->validate([
+            'nama_pelatihan' => 'required|max:255',
+            'tahapan' => 'required|max:100',
+            'kegiatan' => 'required|max:255',
+            'hari' => 'required|max:50',
+            'tanggal' => 'required|date',
+            'tempat' => 'required|max:255',
+        ]);
 
-    $old = $pelatihan->toArray();
+        $old = $pelatihan->toArray();
 
-    $pelatihan->update($validated);
+        $pelatihan->update($validated);
 
-    ActivityLogger::log(
-        'Pelatihan',
-        'Edit',
-        $pelatihan->id,
-        'Mengubah pelatihan "' . $pelatihan->nama_pelatihan . '"',
-        $old,
-        $pelatihan->fresh()->toArray()
-    );
+        ActivityLogger::log(
+            'Pelatihan',
+            'Edit',
+            $pelatihan->id,
+            'Mengubah pelatihan "' . $pelatihan->nama_pelatihan . '"',
+            $old,
+            $pelatihan->fresh()->toArray()
+        );
 
-    return redirect()
-        ->route('pelatihans.index')
-        ->with('success', 'Pelatihan berhasil diperbarui.');
-}
+        return redirect()
+            ->route('pelatihans.index')
+            ->with('success', 'Pelatihan berhasil diperbarui.');
+    }
 
     public function destroy(Pelatihan $pelatihan)
-{
-    $old = $pelatihan->toArray();
+    {
+        $old = $pelatihan->toArray();
 
-    ActivityLogger::log(
-        'Pelatihan',
-        'Hapus',
-        $pelatihan->id,
-        'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '"',
-        $old,
-        []
-    );
+        ActivityLogger::log(
+            'Pelatihan',
+            'Hapus',
+            $pelatihan->id,
+            'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '"',
+            $old,
+            []
+        );
 
-    $pelatihan->delete();
+        $pelatihan->delete();
 
-    return redirect()
-        ->route('pelatihans.index')
-        ->with('success', 'Pelatihan berhasil dihapus.');
-}
+        return redirect()
+            ->route('pelatihans.index')
+            ->with('success', 'Pelatihan berhasil dihapus.');
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -171,9 +175,13 @@ class PelatihanController extends Controller
 
     private function hitungProgress(Pelatihan $pelatihan)
     {
-        $total = $pelatihan->uraians->count();
+        // hanya hitung uraian sesuai tahapan pelatihan
+        $uraians = $pelatihan->uraians
+            ->where('tahapan', $pelatihan->tahapan);
 
-        $selesai = $pelatihan->uraians
+        $total = $uraians->count();
+
+        $selesai = $uraians
             ->where('progres', 'selesai')
             ->count();
 
@@ -183,29 +191,67 @@ class PelatihanController extends Controller
         $pelatihan->persen = $total > 0
             ? round(($selesai / $total) * 100)
             : 0;
+        
+        return $pelatihan->persen;
     }
 
-   public function favorite(Pelatihan $pelatihan)
+    public function favorite(Pelatihan $pelatihan)
+    {
+        $pelatihan->update([
+            'favorit' => !$pelatihan->favorit
+        ]);
+
+        $pelatihan->refresh();
+
+        ActivityLogger::log(
+            'Pelatihan',
+            'Favorit',
+            $pelatihan->id,
+            $pelatihan->favorit
+            ? 'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '" ke favorit'
+            : 'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '" dari favorit',
+            [],
+            [
+                'favorit' => $pelatihan->favorit
+            ]
+        );
+
+        return back();
+    }
+
+    public function updateTahapan(Request $request, Pelatihan $pelatihan)
 {
-    $pelatihan->update([
-        'favorit' => !$pelatihan->favorit
+    $request->validate([
+        'tahapan' => 'required|in:Persiapan,Pelaksanaan,Evaluasi'
     ]);
 
-    $pelatihan->refresh();
+    $old = $pelatihan->tahapan;
+
+    $pelatihan->update([
+        'tahapan' => $request->tahapan
+    ]);
+
+    // hitung ulang progress
+    $persen = $this->hitungProgress($pelatihan->fresh());
+
 
     ActivityLogger::log(
         'Pelatihan',
-        'Favorit',
+        'Edit Tahapan',
         $pelatihan->id,
-        $pelatihan->favorit
-            ? 'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '" ke favorit'
-            : 'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '" dari favorit',
-        [],
+        'Mengubah tahapan pelatihan',
         [
-            'favorit' => $pelatihan->favorit
+            'tahapan' => $old
+        ],
+        [
+            'tahapan' => $request->tahapan
         ]
     );
 
-    return back();
+
+    return response()->json([
+        'success' => true,
+        'persen' => $persen
+    ]);
 }
 }

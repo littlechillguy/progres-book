@@ -15,7 +15,7 @@
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-600"></span>
                 </span>
                 <h1 class="text-2xl font-black text-slate-800 tracking-tight">
-                    Dashboard <span class="text-indigo-600 font-extrabold">PRO-BOOK</span>
+                    Dashboard <span class="text-indigo-600 font-extrabold">SIMPRO</span>
                 </h1>
             </div>
             <p class="text-xs text-slate-500 font-medium mt-1">

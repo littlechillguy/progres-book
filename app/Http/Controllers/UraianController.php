@@ -30,10 +30,11 @@ class UraianController extends Controller
     public function store(Request $request, Pelatihan $pelatihan)
     {
         $request->validate([
-            'uraian_kegiatan' => 'required|string',
+            'tahapan' => 'required|in:Persiapan,Pelaksanaan,Evaluasi',
+            'uraian_kegiatan' => 'required|string|max:255',
             'tanggal' => 'required|date',
             'progres' => 'required|in:belum,on progress,selesai',
-            'tanggal_selesai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|required_if:progres,selesai|date',
             'pic' => 'required|string|max:255',
             'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,ppt,pptx|max:10240',
             'keterangan' => 'nullable|string',
@@ -44,6 +45,7 @@ class UraianController extends Controller
         $data = [
             'pelatihan_id' => $pelatihan->id,
             'urutan' => $urutan ? $urutan + 1 : 1,
+            'tahapan' => $request->tahapan,
             'uraian_kegiatan' => $request->uraian_kegiatan,
             'tanggal' => $request->tanggal,
             'tanggal_selesai' => $request->progres == 'selesai'
@@ -62,16 +64,16 @@ class UraianController extends Controller
             $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
         }
 
-      $uraian = Uraian::create($data);
+        $uraian = Uraian::create($data);
 
-ActivityLogger::log(
-    'Uraian',
-    'Tambah',
-    $uraian->id,
-    'Menambahkan uraian "' . $uraian->uraian_kegiatan . '"',
-    [],
-    $uraian->toArray()
-);
+        ActivityLogger::log(
+            'Uraian',
+            'Tambah',
+            $uraian->id,
+            'Menambahkan uraian "' . $uraian->uraian_kegiatan . '"',
+            [],
+            $uraian->toArray()
+        );
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)
@@ -98,6 +100,7 @@ ActivityLogger::log(
     public function update(Request $request, Pelatihan $pelatihan, Uraian $uraian)
     {
         $request->validate([
+            'tahapan' => 'required|in:Persiapan,Pelaksanaan,Evaluasi',
             'uraian_kegiatan' => 'required|string',
             'tanggal' => 'required|date',
             'progres' => 'required|in:belum,on progress,selesai',
@@ -108,6 +111,7 @@ ActivityLogger::log(
         ]);
 
         $data = [
+            'tahapan' => $request->tahapan,
             'uraian_kegiatan' => $request->uraian_kegiatan,
             'tanggal' => $request->tanggal,
             'tanggal_selesai' => $request->progres == 'selesai'
@@ -134,18 +138,18 @@ ActivityLogger::log(
             $data['lampiran_tipe'] = strtolower($file->getClientOriginalExtension());
         }
 
-       $old = $uraian->toArray();
+        $old = $uraian->toArray();
 
-$uraian->update($data);
+        $uraian->update($data);
 
-ActivityLogger::log(
-    'Uraian',
-    'Edit',
-    $uraian->id,
-    'Mengubah uraian "' . $uraian->uraian_kegiatan . '"',
-    $old,
-    $uraian->fresh()->toArray()
-);
+        ActivityLogger::log(
+            'Uraian',
+            'Edit',
+            $uraian->id,
+            'Mengubah uraian "' . $uraian->uraian_kegiatan . '"',
+            $old,
+            $uraian->fresh()->toArray()
+        );
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)
@@ -160,26 +164,26 @@ ActivityLogger::log(
 
     public function destroy(Pelatihan $pelatihan, Uraian $uraian)
     {
-        $namaUraian = $uraian->uraian_kegiatan;
-
         if (
             $uraian->lampiran &&
             Storage::disk('public')->exists($uraian->lampiran)
         ) {
             Storage::disk('public')->delete($uraian->lampiran);
         }
-        
-$old = $uraian->toArray();
 
-ActivityLogger::log(
-    'Uraian',
-    'Hapus',
-    $uraian->id,
-    'Menghapus uraian "' . $uraian->uraian_kegiatan . '"',
-    $old
-);
+        $old = $uraian->toArray();
 
-$uraian->delete();
+        ActivityLogger::log(
+            'Uraian',
+            'Hapus',
+            $uraian->id,
+            'Menghapus uraian "' . $uraian->uraian_kegiatan . '"',
+            $old
+        );
+
+        $uraian->delete();
+
+        $uraian->delete();
 
         return redirect()
             ->route('pelatihans.show', $pelatihan)

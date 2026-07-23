@@ -18,7 +18,7 @@
             </div>
 
             <h1 class="mt-5 text-3xl font-bold text-slate-800">
-                PRO-BOOK
+                SIMPRO
             </h1>
 
             <p class="text-slate-500 mt-1">
@@ -146,7 +146,7 @@
         </div>
 
         <p class="text-center text-xs text-slate-400 mt-6">
-            © {{ date('Y') }} PRO-BOOK • Sistem Monitoring Progress Pelatihan
+            © {{ date('Y') }} SIMPRO • Sistem Monitoring Progress Pelatihan
         </p>
 
     </div>

@@ -44,13 +44,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/pelatihans/{pelatihan}', [PelatihanController::class, 'update'])
         ->name('pelatihans.update');
 
+    Route::patch('/pelatihans/{pelatihan}/tahapan', [PelatihanController::class, 'updateTahapan'])
+        ->name('pelatihans.updateTahapan');
+
     Route::delete('/pelatihans/{pelatihan}', [PelatihanController::class, 'destroy'])
         ->name('pelatihans.destroy');
 
-    Route::patch(
-        '/pelatihans/{pelatihan}/favorite',
-        [PelatihanController::class, 'favorite']
-    )->name('pelatihans.favorite');
+    Route::patch('/pelatihans/{pelatihan}/favorite', [PelatihanController::class, 'favorite'])
+        ->name('pelatihans.favorite');
 
 });
 

@@ -60,28 +60,30 @@ class PelatihanSeeder extends Seeder
 
         ];
 
-        $uraian = [
+        $template = [
 
-            'Penyusunan TOR',
-            'Penyusunan Jadwal',
-            'Penyusunan Anggaran',
-            'Penyusunan Modul',
-            'Koordinasi Internal',
-            'Koordinasi Narasumber',
-            'Pengiriman Undangan',
-            'Registrasi Peserta',
-            'Persiapan Ruangan',
-            'Persiapan Peralatan',
-            'Briefing Panitia',
-            'Pembukaan Acara',
-            'Penyampaian Materi Sesi 1',
-            'Penyampaian Materi Sesi 2',
-            'Diskusi dan Tanya Jawab',
-            'Praktik Mandiri',
-            'Post Test',
-            'Evaluasi Peserta',
-            'Penyusunan Laporan',
-            'Penutupan Kegiatan'
+            ['Persiapan','Penyusunan TOR'],
+            ['Persiapan','Penyusunan Jadwal'],
+            ['Persiapan','Penyusunan Anggaran'],
+            ['Persiapan','Penyusunan Modul'],
+            ['Persiapan','Koordinasi Internal'],
+            ['Persiapan','Koordinasi Narasumber'],
+            ['Persiapan','Pengiriman Undangan'],
+            ['Persiapan','Registrasi Peserta'],
+
+            ['Pelaksanaan','Persiapan Ruangan'],
+            ['Pelaksanaan','Persiapan Peralatan'],
+            ['Pelaksanaan','Briefing Panitia'],
+            ['Pelaksanaan','Pembukaan Acara'],
+            ['Pelaksanaan','Penyampaian Materi Sesi 1'],
+            ['Pelaksanaan','Penyampaian Materi Sesi 2'],
+            ['Pelaksanaan','Diskusi dan Tanya Jawab'],
+            ['Pelaksanaan','Praktik Mandiri'],
+
+            ['Evaluasi','Post Test'],
+            ['Evaluasi','Evaluasi Peserta'],
+            ['Evaluasi','Penyusunan Laporan'],
+            ['Evaluasi','Penutupan Kegiatan']
 
         ];
 
@@ -102,59 +104,82 @@ class PelatihanSeeder extends Seeder
 
             $pelatihan = Pelatihan::create($pel);
 
-            $mulai = Carbon::parse($pel['tanggal'])->subDays(rand(18,25));
+            $tanggalMulai = Carbon::parse($pel['tanggal'])->subDays(20);
 
-            foreach ($uraian as $i => $item) {
+            foreach ($template as $i => $data) {
 
-                $acak = rand(1,100);
+                [$tahapan, $kegiatan] = $data;
 
-                if($acak <= 55){
+                if ($tahapan == 'Persiapan') {
 
-                    $status = 'selesai';
+                    $status = rand(1,100) <= 85
+                        ? 'selesai'
+                        : 'on progress';
 
-                }elseif($acak <= 80){
+                } elseif ($tahapan == 'Pelaksanaan') {
 
-                    $status = 'on progress';
+                    $acak = rand(1,100);
 
-                }else{
+                    if ($acak <= 50) {
 
-                    $status = 'belum';
+                        $status = 'selesai';
+
+                    } elseif ($acak <= 85) {
+
+                        $status = 'on progress';
+
+                    } else {
+
+                        $status = 'belum';
+
+                    }
+
+                } else {
+
+                    $acak = rand(1,100);
+
+                    if ($acak <= 25) {
+
+                        $status = 'selesai';
+
+                    } elseif ($acak <= 60) {
+
+                        $status = 'on progress';
+
+                    } else {
+
+                        $status = 'belum';
+
+                    }
 
                 }
 
-                $tanggal = $mulai->copy()->addDays(rand($i,$i+2));
+                $tanggal = $tanggalMulai->copy()->addDays($i);
 
                 $tanggalSelesai = null;
 
-                if($status == 'selesai'){
+                if ($status == 'selesai') {
 
-                    $tanggalSelesai = $tanggal->copy()->addDays(rand(0,3));
+                    $tanggalSelesai = $tanggal->copy()->addDays(rand(0,2));
 
                 }
 
                 Uraian::create([
 
-                    'pelatihan_id' => $pelatihan->id,
-
-                    'urutan' => $i+1,
-
-                    'uraian_kegiatan' => $item,
-
-                    'tanggal' => $tanggal,
-
+                    'pelatihan_id'    => $pelatihan->id,
+                    'urutan'          => $i + 1,
+                    'tahapan'         => $tahapan,
+                    'uraian_kegiatan' => $kegiatan,
+                    'tanggal'         => $tanggal,
                     'tanggal_selesai' => $tanggalSelesai,
+                    'progres'         => $status,
+                    'pic'             => $pics[array_rand($pics)],
 
-                    'progres' => $status,
+                    'lampiran'        => null,
+                    'lampiran_nama'   => null,
+                    'lampiran_tipe'   => null,
 
-                    'pic' => $pics[array_rand($pics)],
-
-                    'lampiran' => null,
-
-                    'lampiran_nama' => null,
-
-                    'lampiran_tipe' => null,
-
-                    'keterangan' => 'Pelaksanaan kegiatan '.$item.' pada '.$pelatihan->nama_pelatihan.'.'
+                    'keterangan'      => 'Pelaksanaan kegiatan "' . $kegiatan . '" pada ' . $pelatihan->nama_pelatihan . '.'
 
                 ]);
 

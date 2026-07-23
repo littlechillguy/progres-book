@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Uraian extends Model
 {
     protected $fillable = [
-    'pelatihan_id',
-    'urutan',
-    'uraian_kegiatan',
-    'tanggal',
-    'tanggal_selesai',
-    'progres',
-    'pic',
-    'lampiran',
-    'lampiran_nama',
-    'lampiran_tipe',
-    'keterangan',
-];
+        'pelatihan_id',
+        'urutan',
+        'tahapan',
+        'uraian_kegiatan',
+        'tanggal',
+        'tanggal_selesai',
+        'progres',
+        'pic',
+        'lampiran',
+        'lampiran_nama',
+        'lampiran_tipe',
+        'keterangan',
+    ];
 
     /**
      * Relasi ke tabel pelatihans
