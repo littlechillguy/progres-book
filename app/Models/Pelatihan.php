@@ -15,7 +15,7 @@ class Pelatihan extends Model
     'hari',
     'tanggal',
     'tempat',
-    'favorit',
+    
 
 ];
 
@@ -65,4 +65,12 @@ class Pelatihan extends Model
             default => 'fa-file',
         };
     }
+
+    public function favoritUsers()
+{
+    return $this->belongsToMany(
+        User::class,
+        'favorites'
+    );
+}
 }

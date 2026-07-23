@@ -122,7 +122,7 @@
                             <th class="py-3.5 px-4 text-center w-12">No</th>
                             <th class="py-3.5 px-4 min-w-[200px]">Nama Pelatihan</th>
                             <th class="py-3.5 px-4 whitespace-nowrap">Tahapan</th>
-                            <th class="py-3.5 px-4 min-w-[180px]">Kegiatan</th>
+                           
                             <th class="py-3.5 px-4 whitespace-nowrap">Hari / Tanggal</th>
                             <th class="py-3.5 px-4 whitespace-nowrap">Tempat</th>
                             <th class="py-3.5 px-4 w-40">Progress</th>
@@ -189,9 +189,7 @@
                                 </td>
 
                                 {{-- Kegiatan --}}
-                                <td class="py-4 px-4 align-middle text-slate-600 leading-relaxed">
-                                    <span class="line-clamp-2">{{ $pelatihan->kegiatan }}</span>
-                                </td>
+                              
 
                                 {{-- Hari / Tanggal --}}
                                 <td class="py-4 px-4 whitespace-nowrap align-middle">
@@ -236,26 +234,26 @@
 
                                         {{-- FAVORIT --}}
                                         <td class="py-4 px-4 text-center whitespace-nowrap align-middle">
-                                            <form action="{{ route('pelatihans.favorite', $pelatihan) }}" method="POST"
-                                                class="ignore-row-click inline-block">
-                                                @csrf
-                                                @method('PATCH')
+                                        <form action="{{ route('pelatihans.favorite', $pelatihan) }}" method="POST"
+                                            class="ignore-row-click inline-block">
+                                            @csrf
+                                            @method('PATCH')
 
-                                                <button type="submit"
-                                                    class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-all group/star"
-                                                    title="Tandai Favorit">
+                                            <button
+                                                type="submit"
+                                                class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-all group/star">
 
-                                                    @if($pelatihan->favorit)
-                                                        <i
-                                                            class="fa-solid fa-star text-amber-400 text-sm group-hover/star:scale-110 transition-transform"></i>
-                                                    @else
-                                                        <i
-                                                            class="fa-regular fa-star text-slate-300 group-hover/star:text-amber-400 text-sm group-hover/star:scale-110 transition-all"></i>
-                                                    @endif
+                                                
+                                                
+                                                @if($pelatihan->favorit)
+                                                    <i class="fa-solid fa-star text-amber-400"></i>
+                                                @else
+                                                    <i class="fa-regular fa-star text-slate-300"></i>
+                                                @endif
 
-                                                </button>
-                                            </form>
-                                        </td>
+                                            </button>
+                                        </form>
+                                    </td>
 
                                         {{-- AKSI --}}
                                         <td class="py-4 px-4 text-center whitespace-nowrap align-middle">

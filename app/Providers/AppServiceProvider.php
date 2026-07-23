@@ -4,6 +4,8 @@ namespace App\Providers;
 use App\Models\Pelatihan;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Favorite;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,16 +20,23 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        View::composer('*', function ($view) {
+  public function boot(): void
+{
+    View::composer('*', function ($view) {
 
-    $favoritPelatihans = Pelatihan::where('favorit', true)
-        ->orderBy('nama_pelatihan')
-        ->get();
+        $favoritPelatihans = collect();
 
-    $view->with('favoritPelatihans', $favoritPelatihans);
+        if (Auth::check()) {
 
-});
-    }
-}
+            $favoritPelatihans = Favorite::with('pelatihan')
+                ->where('user_id', Auth::id())
+                ->latest()
+                ->get()
+                ->pluck('pelatihan');
+
+        }
+
+        $view->with('favoritPelatihans', $favoritPelatihans);
+
+    });
+}}

@@ -34,4 +34,12 @@ class User extends Authenticatable
 {
     return $this->hasMany(ActivityLog::class);
 }
+
+public function favoritePelatihans()
+{
+    return $this->belongsToMany(
+        Pelatihan::class,
+        'favorites'
+    );
+}
 }

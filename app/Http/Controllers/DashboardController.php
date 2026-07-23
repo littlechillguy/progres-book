@@ -91,10 +91,10 @@ class DashboardController extends Controller
         | Progress Global
         |--------------------------------------------------------------------------
         */
+$persenGlobal = $totalKegiatanGlobal > 0
+    ? round(($totalSelesaiGlobal / $totalKegiatanGlobal) * 100, 1)
+    : 0;
 
-        $persenGlobal = $totalKegiatanGlobal > 0
-            ? round(($totalSelesaiGlobal / $totalKegiatanGlobal) * 100, 1)
-            : 0;
 
         /*
         |--------------------------------------------------------------------------
@@ -149,15 +149,16 @@ class DashboardController extends Controller
             'selesai' => Uraian::where('progres', 'selesai')->count(),
         ];
 
-        /*
-        |--------------------------------------------------------------------------
-        | Top 5 Pelatihan
-        |--------------------------------------------------------------------------
-        */
+                /*
+            |--------------------------------------------------------------------------
+            | 5 Pelatihan Prioritas
+            |--------------------------------------------------------------------------
+            */
 
-        $topPelatihan = $pelatihans
-            ->sortByDesc('persen')
-            ->take(5);
+            $topPelatihan = $pelatihans
+                ->sortBy('persen')
+                ->take(5)
+                ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -175,25 +176,24 @@ class DashboardController extends Controller
         | Return View
         |--------------------------------------------------------------------------
         */
+return view('dashboard', compact(
+    'pelatihans',
+    'totalKegiatanGlobal',
+    'totalSelesaiGlobal',
+    'persenGlobal',
+    'pelatihanTerlaksana',
 
-        return view('dashboard', compact(
-            'pelatihans',
-            'totalKegiatanGlobal',
-            'totalSelesaiGlobal',
-            'persenGlobal',
-            'pelatihanTerlaksana',
+    'tahun',
+    'chartLabels',
+    'chartData',
+    'totalSelesaiTahun',
+    'rataPerBulan',
+    'bulanTerbaik',
 
-            'tahun',
-            'chartLabels',
-            'chartData',
-            'totalSelesaiTahun',
-            'rataPerBulan',
-            'bulanTerbaik',
+    'statusChart',
+    'topPelatihan',
 
-            'statusChart',
-            'topPelatihan',
-
-            'activities'
-        ));
+    'activities'
+));
     }
 }

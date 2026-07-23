@@ -66,7 +66,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-sky-50/60 rounded-2xl p-5 border border-sky-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-sky-600/80 uppercase tracking-wider">Total Kegiatan</p>
+                    <p class="text-[11px] font-bold text-sky-600/80 uppercase tracking-wider"> Kegiatan Uraian</p>
                     <h2 class="text-3xl font-black text-sky-900 tracking-tight mt-1">{{ $totalKegiatanGlobal }}</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-sky-100/80 text-sky-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -83,7 +83,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-emerald-50/60 rounded-2xl p-5 border border-emerald-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider">Total Selesai</p>
+                    <p class="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider">Kegiatan Selesai</p>
                     <h2 class="text-3xl font-black text-emerald-900 tracking-tight mt-1">{{ $totalSelesaiGlobal }}</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -122,7 +122,7 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm flex flex-col justify-between">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-slate-800 text-sm">Status Uraian</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">Uraian Kegiatan</h3>
                     <p class="text-[11px] text-slate-400 mt-0.5">Distribusi pengerjaan kegiatan</p>
                 </div>
                 <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
@@ -138,11 +138,16 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm">
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="font-bold text-slate-800 text-sm">Top 5 Pelatihan</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Progres tertinggi saat ini</p>
+                <h3 class="font-bold text-slate-800 text-sm">
+                5 Pelatihan Prioritas
+                </h3>
+
+                <p class="text-[11px] text-slate-400 mt-0.5">
+                    Pelatihan yang membutuhkan perhatian lebih
+                </p>
                 </div>
-                <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-trophy"></i>
+                <span class="w-8 h-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
                 </span>
             </div>
 
@@ -154,7 +159,16 @@
                             <span class="font-bold text-indigo-600 bg-indigo-50/80 px-2 py-0.5 rounded-md text-[11px]">{{ $item->persen }}%</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-indigo-500 to-sky-400 h-full rounded-full transition-all duration-500" style="width: {{ $item->persen }}%"></div>
+                        <div class="h-full rounded-full
+                        @if($item->persen < 40)
+                            bg-gradient-to-r from-red-500 to-red-400
+                        @elseif($item->persen < 70)
+                            bg-gradient-to-r from-yellow-500 to-amber-400
+                        @else
+                            bg-gradient-to-r from-green-500 to-emerald-400
+                        @endif"
+                        style="width: {{ $item->persen }}%">
+                        </div>
                         </div>
                     </div>
                 @empty
@@ -173,33 +187,57 @@
                     <h3 class="font-bold text-slate-800 text-sm">Ringkasan {{ $tahun }}</h3>
                     <p class="text-[11px] text-slate-400 mt-0.5">Pencapaian kinerja tahunan</p>
                 </div>
-                <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-calendar-days"></i>
-                </span>
-            </div>
+               <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xs">
+    <i class="fa-solid fa-folder-open"></i>
+</span>
+</div>
 
-            <div class="space-y-2.5 flex-1 flex flex-col justify-center">
-                {{-- Soft Emerald Card --}}
-                <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100/80 flex items-center justify-between hover:border-emerald-200 transition-colors">
-                    <span class="text-xs font-semibold text-emerald-800">Total Selesai</span>
-                    <span class="text-sm font-black text-emerald-600">{{ $totalSelesaiTahun }} <span class="text-[10px] font-medium text-emerald-700/80">Kegiatan</span></span>
-                </div>
+<div class="space-y-2.5 flex-1 flex flex-col justify-center">
 
-                {{-- Soft Sky Card --}}
-                <div class="p-3.5 rounded-xl bg-sky-50/70 border border-sky-100/80 flex items-center justify-between hover:border-sky-200 transition-colors">
-                    <span class="text-xs font-semibold text-sky-800">Rata-rata / Bulan</span>
-                    <span class="text-sm font-black text-sky-600">{{ $rataPerBulan }} <span class="text-[10px] font-medium text-sky-700/80">Kegiatan</span></span>
-                </div>
+   {{-- Soft Emerald Card --}}
+<div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100/80 flex items-center justify-between hover:border-emerald-200 transition-colors">
+    <span class="text-xs font-semibold text-emerald-800">
+        Total Selesai
+    </span>
 
-                {{-- Soft Amber Card --}}
-                <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-100/80 flex items-center justify-between hover:border-amber-200 transition-colors">
-                    <span class="text-xs font-semibold text-amber-800">Bulan Terbaik</span>
-                    <span class="text-sm font-black text-amber-600">{{ $bulanTerbaik }}</span>
-                </div>
-            </div>
-        </div>
+    <span class="text-sm font-black text-emerald-600">
+        {{ $totalSelesaiTahun }}
+        <span class="text-[10px] font-medium text-emerald-700/80">
+            Kegiatan
+        </span>
+    </span>
+</div>
 
-    </div>
+{{-- Soft Sky Card --}}
+<div class="p-3.5 rounded-xl bg-sky-50/70 border border-sky-100/80 flex items-center justify-between hover:border-sky-200 transition-colors">
+    <span class="text-xs font-semibold text-sky-800">
+        Rata-rata / Bulan
+    </span>
+
+    <span class="text-sm font-black text-sky-600">
+        {{ $rataPerBulan }}
+        <span class="text-[10px] font-medium text-sky-700/80">
+            Kegiatan
+        </span>
+    </span>
+</div>
+
+{{-- Soft Amber Card --}}
+<div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-100/80 flex items-center justify-between hover:border-amber-200 transition-colors">
+    <span class="text-xs font-semibold text-amber-800">
+        Bulan Terbaik
+    </span>
+
+    <span class="text-sm font-black text-amber-600">
+        {{ $bulanTerbaik }}
+    </span>
+</div>
+
+</div>
+
+</div>
+
+</div>
 
     {{-- 4. Bottom Section: Main Line Chart & Activity Log --}}
     <div class="grid lg:grid-cols-3 gap-5">

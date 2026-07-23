@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Pelatihan;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogger;
+use App\Models\Favorite;
+use Illuminate\Support\Facades\Auth;
 
 class PelatihanController extends Controller
 {
@@ -31,6 +33,19 @@ class PelatihanController extends Controller
         foreach ($pelatihans as $pelatihan) {
             $this->hitungProgress($pelatihan);
         }
+
+        if (Auth::check()) {
+
+    $favoriteIds = Favorite::where('user_id', Auth::id())
+        ->pluck('pelatihan_id');
+
+    foreach ($pelatihans as $pelatihan) {
+
+        $pelatihan->favorit = $favoriteIds->contains($pelatihan->id);
+
+    }
+
+}
 
         return view('pelatihans.index', compact('pelatihans'));
     }
@@ -196,28 +211,49 @@ class PelatihanController extends Controller
     }
 
     public function favorite(Pelatihan $pelatihan)
-    {
-        $pelatihan->update([
-            'favorit' => !$pelatihan->favorit
-        ]);
+{
+    $favorite = Favorite::where('user_id', Auth::id())
+        ->where('pelatihan_id', $pelatihan->id)
+        ->first();
 
-        $pelatihan->refresh();
+    if ($favorite) {
+
+        // Hapus favorit
+        $favorite->delete();
+
+        $status = false;
 
         ActivityLogger::log(
             'Pelatihan',
             'Favorit',
             $pelatihan->id,
-            $pelatihan->favorit
-            ? 'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '" ke favorit'
-            : 'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '" dari favorit',
+            'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '" dari favorit',
             [],
-            [
-                'favorit' => $pelatihan->favorit
-            ]
+            []
         );
 
-        return back();
+    } else {
+
+        // Tambah favorit
+        Favorite::create([
+            'user_id' => Auth::id(),
+            'pelatihan_id' => $pelatihan->id,
+        ]);
+
+        $status = true;
+
+        ActivityLogger::log(
+            'Pelatihan',
+            'Favorit',
+            $pelatihan->id,
+            'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '" ke favorit',
+            [],
+            []
+        );
     }
+
+    return back();
+}
 
     public function updateTahapan(Request $request, Pelatihan $pelatihan)
 {
