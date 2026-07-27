@@ -36,16 +36,16 @@ class PelatihanController extends Controller
 
         if (Auth::check()) {
 
-    $favoriteIds = Favorite::where('user_id', Auth::id())
-        ->pluck('pelatihan_id');
+            $favoriteIds = Favorite::where('user_id', Auth::id())
+                ->pluck('pelatihan_id');
 
-    foreach ($pelatihans as $pelatihan) {
+            foreach ($pelatihans as $pelatihan) {
 
-        $pelatihan->favorit = $favoriteIds->contains($pelatihan->id);
+                $pelatihan->favorit = $favoriteIds->contains($pelatihan->id);
 
-    }
+            }
 
-}
+        }
 
         return view('pelatihans.index', compact('pelatihans'));
     }
@@ -85,38 +85,24 @@ class PelatihanController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-       $total = $uraians->total();
+        // Progress TOTAL seluruh uraian pelatihan
+        $total = $pelatihan->uraians()->count();
 
-$selesai = $pelatihan->uraians()
-    ->when($request->filled('search'), function ($query) use ($request) {
-        $query->where(function ($q) use ($request) {
-            $q->where('uraian_kegiatan', 'like', '%' . $request->search . '%')
-              ->orWhere('pic', 'like', '%' . $request->search . '%');
-        });
-    })
-    ->when($request->filled('tahapan'), function ($query) use ($request) {
-        $query->where('tahapan', $request->tahapan);
-    })
-    ->when($request->filled('progres'), function ($query) use ($request) {
-        $query->where('progres', $request->progres);
-    })
-    ->when($request->filled('tanggal'), function ($query) use ($request) {
-        $query->whereDate('tanggal', $request->tanggal);
-    })
-    ->where('progres', 'selesai')
-    ->count();
+        $selesai = $pelatihan->uraians()
+            ->where('progres', 'selesai')
+            ->count();
 
-$progress = $total > 0
-    ? round(($selesai / $total) * 100)
-    : 0;
+        $progress = $total > 0
+            ? round(($selesai / $total) * 100)
+            : 0;
 
-return view('uraians.index', [
-    'pelatihan' => $pelatihan,
-    'uraians' => $uraians,
-    'total' => $total,
-    'selesai' => $selesai,
-    'progress' => $progress,
-]);
+        return view('uraians.index', [
+            'pelatihan' => $pelatihan,
+            'uraians' => $uraians,
+            'total' => $total,
+            'selesai' => $selesai,
+            'progress' => $progress,
+        ]);
     }
 
     public function create()
@@ -229,88 +215,88 @@ return view('uraians.index', [
         $pelatihan->persen = $total > 0
             ? round(($selesai / $total) * 100)
             : 0;
-        
+
         return $pelatihan->persen;
     }
 
     public function favorite(Pelatihan $pelatihan)
-{
-    $favorite = Favorite::where('user_id', Auth::id())
-        ->where('pelatihan_id', $pelatihan->id)
-        ->first();
+    {
+        $favorite = Favorite::where('user_id', Auth::id())
+            ->where('pelatihan_id', $pelatihan->id)
+            ->first();
 
-    if ($favorite) {
+        if ($favorite) {
 
-        // Hapus favorit
-        $favorite->delete();
+            // Hapus favorit
+            $favorite->delete();
 
-        $status = false;
+            $status = false;
 
-        ActivityLogger::log(
-            'Pelatihan',
-            'Favorit',
-            $pelatihan->id,
-            'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '" dari favorit',
-            [],
-            []
-        );
+            ActivityLogger::log(
+                'Pelatihan',
+                'Favorit',
+                $pelatihan->id,
+                'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '" dari favorit',
+                [],
+                []
+            );
 
-    } else {
+        } else {
 
-        // Tambah favorit
-        Favorite::create([
-            'user_id' => Auth::id(),
-            'pelatihan_id' => $pelatihan->id,
-        ]);
+            // Tambah favorit
+            Favorite::create([
+                'user_id' => Auth::id(),
+                'pelatihan_id' => $pelatihan->id,
+            ]);
 
-        $status = true;
+            $status = true;
 
-        ActivityLogger::log(
-            'Pelatihan',
-            'Favorit',
-            $pelatihan->id,
-            'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '" ke favorit',
-            [],
-            []
-        );
+            ActivityLogger::log(
+                'Pelatihan',
+                'Favorit',
+                $pelatihan->id,
+                'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '" ke favorit',
+                [],
+                []
+            );
+        }
+
+        return back();
     }
 
-    return back();
-}
-
     public function updateTahapan(Request $request, Pelatihan $pelatihan)
-{
-    $request->validate([
-        'tahapan' => 'required|in:Persiapan,Pelaksanaan,Evaluasi'
-    ]);
+    {
+        $request->validate([
+            'tahapan' => 'required|in:Persiapan,Pelaksanaan,Evaluasi'
+        ]);
 
-    $old = $pelatihan->tahapan;
+        $old = $pelatihan->tahapan;
 
-    $pelatihan->update([
-        'tahapan' => $request->tahapan
-    ]);
-
-    // hitung ulang progress
-    $persen = $this->hitungProgress($pelatihan->fresh());
-
-
-    ActivityLogger::log(
-        'Pelatihan',
-        'Edit Tahapan',
-        $pelatihan->id,
-        'Mengubah tahapan pelatihan',
-        [
-            'tahapan' => $old
-        ],
-        [
+        $pelatihan->update([
             'tahapan' => $request->tahapan
-        ]
-    );
+        ]);
+
+        // hitung ulang progress
+        $persen = $this->hitungProgress($pelatihan->fresh());
 
 
-    return response()->json([
-        'success' => true,
-        'persen' => $persen
-    ]);
-}
+        ActivityLogger::log(
+            'Pelatihan',
+            'Edit Tahapan',
+            $pelatihan->id,
+            'Mengubah tahapan pelatihan',
+            [
+                'tahapan' => $old
+            ],
+            [
+                'tahapan' => $request->tahapan
+            ]
+        );
+
+
+        return response()->json([
+            'success' => true,
+            'persen' => $persen
+        ]);
+    }
 }

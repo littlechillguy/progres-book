@@ -93,6 +93,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pelatihans/{pelatihan}/uraians/{uraian}', [UraianController::class, 'destroy'])
         ->name('uraians.destroy');
 
+    Route::post('/uraians/{uraian}/upload', [UraianController::class, 'uploadLampiran'])
+    ->name('uraians.upload')
+    ->middleware('auth');
+
 });
 
 /*

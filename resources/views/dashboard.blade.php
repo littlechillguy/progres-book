@@ -66,7 +66,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-sky-50/60 rounded-2xl p-5 border border-sky-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-sky-600/80 uppercase tracking-wider"> Kegiatan Uraian</p>
+                    <p class="text-[11px] font-bold text-sky-600/80 uppercase tracking-wider"> Uraian Kegiatan </p>
                     <h2 class="text-3xl font-black text-sky-900 tracking-tight mt-1">{{ $totalKegiatanGlobal }}</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-sky-100/80 text-sky-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -83,7 +83,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-emerald-50/60 rounded-2xl p-5 border border-emerald-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider">Kegiatan Selesai</p>
+                    <p class="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider">Uraian Kegiatan Selesai</p>
                     <h2 class="text-3xl font-black text-emerald-900 tracking-tight mt-1">{{ $totalSelesaiGlobal }}</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">

@@ -158,35 +158,55 @@
                                     </div>
                                 </td>
 
-                                {{-- Tahapan Badge Soft --}}
-                                <td class="py-4 px-4 whitespace-nowrap align-middle ignore-row-click">
-                                    @php
-                                        $tahapanClass = match ($pelatihan->tahapan) {
-                                            'Persiapan' => 'bg-amber-50 text-amber-700 border-amber-100',
-                                            'Pelaksanaan' => 'bg-sky-50 text-sky-700 border-sky-100',
-                                            'Evaluasi' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                                            default => 'bg-slate-100 text-slate-600 border-slate-200'
-                                        };
-                                    @endphp
+                                {{-- Tahapan --}}
+<td class="py-4 px-4 whitespace-nowrap align-middle ignore-row-click">
 
-                                    <select
-                                        class="tahapan-select px-2.5 py-1 border font-bold rounded-lg text-[10px] tracking-wide cursor-pointer {{ $tahapanClass }}"
-                                        data-url="{{ route('pelatihans.updateTahapan', $pelatihan) }}">
+    @php
+        $tahapanClass = match ($pelatihan->tahapan) {
+            'Persiapan' => 'bg-amber-50 text-amber-700 border-amber-100',
+            'Pelaksanaan' => 'bg-sky-50 text-sky-700 border-sky-100',
+            'Evaluasi' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+            default => 'bg-slate-100 text-slate-600 border-slate-200'
+        };
+    @endphp
 
-                                        <option value="Persiapan" {{ $pelatihan->tahapan == 'Persiapan' ? 'selected' : '' }}>
-                                            Persiapan
-                                        </option>
+    @auth
+        @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
 
-                                        <option value="Pelaksanaan" {{ $pelatihan->tahapan == 'Pelaksanaan' ? 'selected' : '' }}>
-                                            Pelaksanaan
-                                        </option>
+            <select
+                class="tahapan-select px-2.5 py-1 border font-bold rounded-lg text-[10px] tracking-wide cursor-pointer {{ $tahapanClass }}"
+                data-url="{{ route('pelatihans.updateTahapan', $pelatihan) }}">
 
-                                        <option value="Evaluasi" {{ $pelatihan->tahapan == 'Evaluasi' ? 'selected' : '' }}>
-                                            Evaluasi
-                                        </option>
+                <option value="Persiapan" {{ $pelatihan->tahapan == 'Persiapan' ? 'selected' : '' }}>
+                    Persiapan
+                </option>
 
-                                    </select>
-                                </td>
+                <option value="Pelaksanaan" {{ $pelatihan->tahapan == 'Pelaksanaan' ? 'selected' : '' }}>
+                    Pelaksanaan
+                </option>
+
+                <option value="Evaluasi" {{ $pelatihan->tahapan == 'Evaluasi' ? 'selected' : '' }}>
+                    Evaluasi
+                </option>
+
+            </select>
+
+        @else
+
+            <span class="px-2.5 py-1 border font-bold rounded-lg text-[10px] tracking-wide inline-block {{ $tahapanClass }}">
+                {{ $pelatihan->tahapan }}
+            </span>
+
+        @endif
+    @else
+
+        <span class="px-2.5 py-1 border font-bold rounded-lg text-[10px] tracking-wide inline-block {{ $tahapanClass }}">
+            {{ $pelatihan->tahapan }}
+        </span>
+
+    @endauth
+
+</td>
 
                                 {{-- Kegiatan --}}
                               

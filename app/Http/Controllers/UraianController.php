@@ -202,4 +202,32 @@ class UraianController extends Controller
 
         return view('uraians.show', compact('uraian'));
     }
+
+    public function uploadLampiran(Request $request, Uraian $uraian)
+{
+    $request->validate([
+        'lampiran' => 'required|file|max:20480'
+    ]);
+
+    // Hapus file lama jika ada
+    if ($uraian->lampiran && Storage::disk('public')->exists($uraian->lampiran)) {
+        Storage::disk('public')->delete($uraian->lampiran);
+    }
+
+    $file = $request->file('lampiran');
+
+    $path = $file->store('lampiran-uraian', 'public');
+
+    $uraian->update([
+        'lampiran'       => $path,
+        'lampiran_nama'  => $file->getClientOriginalName(),
+        'lampiran_tipe'  => strtolower($file->getClientOriginalExtension()),
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'nama'    => $file->getClientOriginalName(),
+        'icon'    => $uraian->fresh()->fileIcon(),
+    ]);
+}
 }
