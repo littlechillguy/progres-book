@@ -218,85 +218,60 @@ class PelatihanController extends Controller
 
         return $pelatihan->persen;
     }
+public function favorite(Pelatihan $pelatihan)
+{
+    $favorite = Favorite::where('user_id', Auth::id())
+        ->where('pelatihan_id', $pelatihan->id)
+        ->first();
 
-    public function favorite(Pelatihan $pelatihan)
-    {
-        $favorite = Favorite::where('user_id', Auth::id())
-            ->where('pelatihan_id', $pelatihan->id)
-            ->first();
+    if ($favorite) {
 
-        if ($favorite) {
+        $favorite->delete();
 
-            // Hapus favorit
-            $favorite->delete();
+    } else {
 
-            $status = false;
+        Favorite::create([
+            'user_id'      => Auth::id(),
+            'pelatihan_id' => $pelatihan->id,
+        ]);
 
-            ActivityLogger::log(
-                'Pelatihan',
-                'Favorit',
-                $pelatihan->id,
-                'Menghapus pelatihan "' . $pelatihan->nama_pelatihan . '" dari favorit',
-                [],
-                []
-            );
-
-        } else {
-
-            // Tambah favorit
-            Favorite::create([
-                'user_id' => Auth::id(),
-                'pelatihan_id' => $pelatihan->id,
-            ]);
-
-            $status = true;
-
-            ActivityLogger::log(
-                'Pelatihan',
-                'Favorit',
-                $pelatihan->id,
-                'Menambahkan pelatihan "' . $pelatihan->nama_pelatihan . '" ke favorit',
-                [],
-                []
-            );
-        }
-
-        return back();
     }
+
+    return back()->with('success', 'Status favorit berhasil diperbarui.');
+}
 
     public function updateTahapan(Request $request, Pelatihan $pelatihan)
-    {
-        $request->validate([
-            'tahapan' => 'required|in:Persiapan,Pelaksanaan,Evaluasi'
-        ]);
+{
+    $request->validate([
+        'tahapan' => 'required|in:Persiapan,Pelaksanaan,Evaluasi'
+    ]);
 
-        $old = $pelatihan->tahapan;
+    $oldTahapan = $pelatihan->tahapan;
 
-        $pelatihan->update([
+    $pelatihan->update([
+        'tahapan' => $request->tahapan
+    ]);
+
+    ActivityLogger::log(
+        'Pelatihan',
+        'Update Tahapan',
+        $pelatihan->id,
+        'Mengubah tahapan pelatihan "' . $pelatihan->nama_pelatihan . '"',
+        [
+            'tahapan' => $oldTahapan
+        ],
+        [
             'tahapan' => $request->tahapan
-        ]);
+        ]
+    );
 
-        // hitung ulang progress
-        $persen = $this->hitungProgress($pelatihan->fresh());
+    $this->hitungProgress($pelatihan);
 
-
-        ActivityLogger::log(
-            'Pelatihan',
-            'Edit Tahapan',
-            $pelatihan->id,
-            'Mengubah tahapan pelatihan',
-            [
-                'tahapan' => $old
-            ],
-            [
-                'tahapan' => $request->tahapan
-            ]
-        );
-
-
-        return response()->json([
-            'success' => true,
-            'persen' => $persen
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'persen' => $pelatihan->persen,
+        'total' => $pelatihan->total_kegiatan,
+        'selesai' => $pelatihan->total_selesai,
+    ]);
+}
 }
