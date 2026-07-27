@@ -10,7 +10,7 @@ class ActivityLogController extends Controller
     {
         $activities = ActivityLog::with('user')
             ->latest()
-            ->paginate(15);
+            ->paginate(20);
 
         return view('activity.index', compact('activities'));
     }

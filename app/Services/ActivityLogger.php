@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ActivityLogger
 {
@@ -16,7 +17,7 @@ class ActivityLogger
         array $newValue = []
     ): void {
 
-        ActivityLog::create([
+        $log = ActivityLog::create([
 
             'user_id' => Auth::id(),
 
@@ -33,6 +34,19 @@ class ActivityLogger
             'new_value' => empty($newValue) ? null : $newValue,
 
         ]);
+
+        // Maksimal 100 activity log
+        $count = ActivityLog::count();
+
+        if ($count > 100) {
+
+            $delete = $count - 100;
+
+            ActivityLog::oldest()
+                ->take($delete)
+                ->delete();
+
+        }
 
     }
 }
