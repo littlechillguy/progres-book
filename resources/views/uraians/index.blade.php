@@ -75,65 +75,136 @@
         </div>
 
         {{-- 2. Toolbar Filter & Form Pencarian --}}
-        <div class="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
-            <form method="GET" action="{{ route('pelatihans.show', $pelatihan->id) }}">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3">
+       <div class="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
 
-                    {{-- Search Input --}}
-                    <div class="md:col-span-5 relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-xs">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Cari uraian kegiatan atau PIC..."
-                            class="w-full pl-9 pr-4 py-2 bg-slate-50/60 border border-slate-200/80 text-slate-700 text-xs font-semibold rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400">
-                    </div>
+    <form method="GET" action="{{ route('pelatihans.show', $pelatihan->id) }}">
 
-                    {{-- Select Status --}}
-                    <div class="md:col-span-3 relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-indigo-500 text-xs">
-                            <i class="fa-solid fa-list-check"></i>
-                        </div>
-                        <select name="progres"
-                            class="w-full pl-9 pr-8 py-2 bg-slate-50/60 border border-slate-200/80 text-slate-700 text-xs font-semibold rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all appearance-none cursor-pointer">
-                            <option value="">Semua Status</option>
-                            <option value="selesai" {{ request('progres') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="on progress" {{ request('progres') == 'on progress' ? 'selected' : '' }}>On
-                                Progress</option>
-                            <option value="belum" {{ request('progres') == 'belum' ? 'selected' : '' }}>Belum</option>
-                        </select>
-                        <div
-                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 text-xs">
-                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                        </div>
-                    </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
 
-                    {{-- Select Tanggal --}}
-                    <div class="md:col-span-2 relative">
-                        <input type="date" name="tanggal" value="{{ request('tanggal') }}"
-                            class="w-full px-3 py-2 bg-slate-50/60 border border-slate-200/80 text-slate-700 text-xs font-semibold rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
-                    </div>
-
-                    {{-- Filter & Reset Buttons --}}
-                    <div class="md:col-span-2 flex gap-2">
-                        <button type="submit"
-                            class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95">
-                            <i class="fa-solid fa-filter text-[10px]"></i>
-                            <span>Filter</span>
-                        </button>
-
-                        <a href="{{ route('pelatihans.show', $pelatihan->id) }}"
-                            class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition-all duration-200 flex items-center justify-center border border-slate-200/60 active:scale-95"
-                            title="Reset Filter">
-                            <i class="fa-solid fa-rotate-left text-[11px]"></i>
-                        </a>
-                    </div>
-
+            {{-- Search --}}
+            <div class="md:col-span-4 relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-xs">
+                    <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
-            </form>
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Cari uraian kegiatan atau PIC..."
+                    class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+            </div>
+
+            {{-- Tahapan --}}
+            <div class="md:col-span-2 relative">
+
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-indigo-500 text-xs">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+
+                <select
+                    name="tahapan"
+                    class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+
+                    <option value="">Semua Tahapan</option>
+
+                    <option value="Persiapan"
+                        {{ request('tahapan') == 'Persiapan' ? 'selected' : '' }}>
+                        Persiapan
+                    </option>
+
+                    <option value="Pelaksanaan"
+                        {{ request('tahapan') == 'Pelaksanaan' ? 'selected' : '' }}>
+                        Pelaksanaan
+                    </option>
+
+                    <option value="Evaluasi"
+                        {{ request('tahapan') == 'Evaluasi' ? 'selected' : '' }}>
+                        Evaluasi
+                    </option>
+
+                </select>
+
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                </div>
+
+            </div>
+
+            {{-- Status --}}
+            <div class="md:col-span-2 relative">
+
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-indigo-500 text-xs">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+
+                <select
+                    name="progres"
+                    class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+
+                    <option value="">Semua Status</option>
+
+                    <option value="selesai"
+                        {{ request('progres') == 'selesai' ? 'selected' : '' }}>
+                        Selesai
+                    </option>
+
+                    <option value="on progress"
+                        {{ request('progres') == 'on progress' ? 'selected' : '' }}>
+                        On Progress
+                    </option>
+
+                    <option value="belum"
+                        {{ request('progres') == 'belum' ? 'selected' : '' }}>
+                        Belum
+                    </option>
+
+                </select>
+
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                </div>
+
+            </div>
+
+            {{-- Tanggal --}}
+            <div class="md:col-span-2">
+
+                <input
+                    type="date"
+                    name="tanggal"
+                    value="{{ request('tanggal') }}"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+
+            </div>
+
+            {{-- Tombol --}}
+            <div class="md:col-span-2 flex gap-2">
+
+                <button
+                    type="submit"
+                    class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+
+                    <i class="fa-solid fa-filter text-[11px]"></i>
+                    Filter
+
+                </button>
+
+                <a
+                    href="{{ route('pelatihans.show', $pelatihan->id) }}"
+                    class="w-11 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl border border-slate-200 transition-all">
+
+                    <i class="fa-solid fa-rotate-left"></i>
+
+                </a>
+
+            </div>
+
         </div>
+
+    </form>
+
+</div>
 
         {{-- 3. Header Table & Action Add --}}
         <div class="flex items-center justify-between gap-4 pt-2">

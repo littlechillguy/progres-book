@@ -85,15 +85,38 @@ class PelatihanController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $this->hitungProgress($pelatihan);
+       $total = $uraians->total();
 
-        return view('uraians.index', [
-            'pelatihan' => $pelatihan,
-            'uraians' => $uraians,
-            'total' => $pelatihan->total_kegiatan,
-            'selesai' => $pelatihan->total_selesai,
-            'progress' => $pelatihan->persen,
-        ]);
+$selesai = $pelatihan->uraians()
+    ->when($request->filled('search'), function ($query) use ($request) {
+        $query->where(function ($q) use ($request) {
+            $q->where('uraian_kegiatan', 'like', '%' . $request->search . '%')
+              ->orWhere('pic', 'like', '%' . $request->search . '%');
+        });
+    })
+    ->when($request->filled('tahapan'), function ($query) use ($request) {
+        $query->where('tahapan', $request->tahapan);
+    })
+    ->when($request->filled('progres'), function ($query) use ($request) {
+        $query->where('progres', $request->progres);
+    })
+    ->when($request->filled('tanggal'), function ($query) use ($request) {
+        $query->whereDate('tanggal', $request->tanggal);
+    })
+    ->where('progres', 'selesai')
+    ->count();
+
+$progress = $total > 0
+    ? round(($selesai / $total) * 100)
+    : 0;
+
+return view('uraians.index', [
+    'pelatihan' => $pelatihan,
+    'uraians' => $uraians,
+    'total' => $total,
+    'selesai' => $selesai,
+    'progress' => $progress,
+]);
     }
 
     public function create()
