@@ -100,6 +100,7 @@ Route::middleware('auth')->group(function () {
 });
 
 /*
+/*
 |--------------------------------------------------------------------------
 | Profile
 |--------------------------------------------------------------------------
@@ -107,19 +108,32 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/profile', [ProfileController::class, 'edit'])
+   Route::get('/profile', [ProfileController::class, 'index'])
+    ->name('profile');
+
+
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+
+   Route::put('/profile', [ProfileController::class, 'update'])
+    ->name('profile.update');
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 
+
     Route::get('/activity-log', [ActivityLogController::class, 'index'])
         ->name('activity-log.index');
 
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])
+    ->name('profile.password.update');
+
+        
+
 });
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -135,6 +149,9 @@ Route::middleware(['auth', 'superadmin'])->group(function () {
         '/users/{user}/reset-password',
         [UserController::class, 'resetPassword']
     )->name('users.reset-password');
+
+    
+
 
 });
 
