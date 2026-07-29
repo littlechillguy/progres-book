@@ -141,7 +141,7 @@
 
                                 {{-- Nomor --}}
                                 <td class="py-4 px-4 text-center text-slate-400 font-semibold align-middle">
-                                    {{ $loop->iteration }}
+                                    {{ $pelatihans->firstItem() + $loop->index }}
                                 </td>
 
                                 {{-- Nama Pelatihan --}}
@@ -286,17 +286,19 @@
                                                 </a>
 
                                                 {{-- Hapus --}}
-                                                <form action="{{ route('pelatihans.destroy', $pelatihan) }}" method="POST"
-                                                    onsubmit="return confirm('Yakin ingin menghapus pelatihan ini?')"
-                                                    class="ignore-row-click inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all shadow-2xs"
-                                                        title="Hapus">
-                                                        <i class="fa-solid fa-trash text-xs"></i>
-                                                    </button>
-                                                </form>
+                                                <form id="delete-pelatihan-{{ $pelatihan->id }}" 
+      action="{{ route('pelatihans.destroy', $pelatihan) }}" 
+      method="POST" 
+      class="ignore-row-click inline">
+    @csrf
+    @method('DELETE')
+    <button type="button"
+            onclick="event.stopPropagation(); confirmDeletePelatihan('delete-pelatihan-{{ $pelatihan->id }}', '{{ addslashes($pelatihan->nama_pelatihan ?? $pelatihan->nama ?? 'pelatihan ini') }}')"
+            class="ignore-row-click w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all duration-200 shadow-2xs"
+            title="Hapus Pelatihan">
+        <i class="fa-solid fa-trash text-xs"></i>
+    </button>
+</form>
                                             </div>
                                         </td>
 
@@ -322,6 +324,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                    <div class="mt-6">
+                        {{ $pelatihans->links() }}
+                    </div>
             </div>
         </div>
 
@@ -348,118 +353,164 @@
         }
     </style>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    {{-- Library SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            document.querySelectorAll('.pelatihan-row').forEach(row => {
-                row.addEventListener('click', e => {
-                    if (!e.target.closest('.ignore-row-click')) window.location.href = row.dataset.href;
-                });
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // 1. Handling Klik Baris Tabel Pelatihan (Mengabaikan elemen ber-class .ignore-row-click)
+        document.querySelectorAll('.pelatihan-row').forEach(row => {
+            row.addEventListener('click', e => {
+                if (!e.target.closest('.ignore-row-click')) {
+                    window.location.href = row.dataset.href;
+                }
             });
-
-            document.querySelectorAll('.tahapan-select').forEach(select => {
-
-                select.dataset.oldValue = select.value;
-
-                select.addEventListener('change', function () {
-
-                    const tahapan = this.value;
-                    const old = this.dataset.oldValue;
-
-                    this.disabled = true;
-                    this.classList.add('opacity-60', 'cursor-wait');
-
-                    fetch(this.dataset.url, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({ tahapan })
-                    })
-                        .then(res => {
-                            if (!res.ok) throw new Error();
-                            return res.json();
-                        })
-                        .then(data => {
-
-                            if (data.success) {
-
-                                updateTahapanStyle(this, tahapan);
-
-                                this.dataset.oldValue = tahapan;
-
-                                const row = this.closest('tr');
-
-                                const persen = row.querySelector('.progress-value');
-                                const bar = row.querySelector('.progress-bar');
-
-                                if (persen) {
-                                    persen.textContent = data.persen + '%';
-                                }
-
-                                if (bar) {
-                                    bar.style.width = data.persen + '%';
-                                }
-
-                                showToast('Tahapan berhasil diperbarui');
-
-                            }
-
-                        })
-                        .catch(() => {
-                            this.value = old;
-                            showToast('Gagal menyimpan perubahan');
-                        })
-                        .finally(() => {
-                            this.disabled = false;
-                            this.classList.remove('opacity-60', 'cursor-wait');
-                        });
-
-                });
-
-            });
-
         });
 
+        // 2. Handling Perubahan Dropdown Tahapan Pelatihan (AJAX PATCH)
+        document.querySelectorAll('.tahapan-select').forEach(select => {
 
-        function updateTahapanStyle(select, tahapan) {
+            select.dataset.oldValue = select.value;
 
-            select.classList.remove(
-                'bg-amber-50', 'text-amber-700', 'border-amber-100',
-                'bg-sky-50', 'text-sky-700', 'border-sky-100',
-                'bg-emerald-50', 'text-emerald-700', 'border-emerald-100'
-            );
+            select.addEventListener('change', function () {
+                const tahapan = this.value;
+                const old = this.dataset.oldValue;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-            const style = {
-                Persiapan: ['bg-amber-50', 'text-amber-700', 'border-amber-100'],
-                Pelaksanaan: ['bg-sky-50', 'text-sky-700', 'border-sky-100'],
-                Evaluasi: ['bg-emerald-50', 'text-emerald-700', 'border-emerald-100']
-            };
+                // Visual Feedback: Disable Dropdown & Kursor Loading
+                this.disabled = true;
+                this.classList.add('opacity-50', 'cursor-wait', 'pointer-events-none');
 
-            if (style[tahapan]) select.classList.add(...style[tahapan]);
+                fetch(this.dataset.url, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ tahapan })
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Terjadi kesalahan pada server.');
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Update Style Badge Tahapan
+                        updateTahapanStyle(this, tahapan);
+                        this.dataset.oldValue = tahapan;
+
+                        // Update Nilai Persentase & Progress Bar di Tabel
+                        const row = this.closest('tr');
+                        if (row) {
+                            const persenEl = row.querySelector('.progress-value');
+                            const barEl = row.querySelector('.progress-bar');
+
+                            if (persenEl && data.persen !== undefined) {
+                                persenEl.textContent = data.persen + '%';
+                            }
+                            if (barEl && data.persen !== undefined) {
+                                barEl.style.width = data.persen + '%';
+                            }
+                        }
+
+                        // Tampilkan Toast Sukses
+                        showToast('Tahapan berhasil diperbarui', 'success');
+                    } else {
+                        throw new Error(data.message || 'Gagal menyimpan perubahan');
+                    }
+                })
+                .catch(err => {
+                    // Revert Nilai Select ke Nilai Sebelum Perubahan & Tampilkan Toast Error
+                    this.value = old;
+                    showToast(err.message || 'Gagal menyimpan perubahan', 'error');
+                })
+                .finally(() => {
+                    // Kembalikan State Select ke Normal
+                    this.disabled = false;
+                    this.classList.remove('opacity-50', 'cursor-wait', 'pointer-events-none');
+                });
+            });
+        });
+    });
+
+    /**
+     * SweetAlert Modal Konfirmasi Hapus Pelatihan
+     */
+    function confirmDeletePelatihan(formId, namaPelatihan) {
+        Swal.fire({
+            title: 'Hapus Pelatihan?',
+            text: `Data pelatihan "${namaPelatihan}" akan dihapus permanen beserta seluruh rekapan di dalamnya.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48', // Rose-600
+            cancelButtonColor: '#94a3b8',  // Slate-400
+            confirmButtonText: '<i class="fa-solid fa-trash text-xs mr-1"></i> Ya, Hapus Data',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-2xl p-6 font-sans',
+                title: 'text-lg font-bold text-slate-800',
+                htmlContainer: 'text-xs text-slate-500 mt-2',
+                confirmButton: 'px-4 py-2.5 text-xs font-semibold rounded-xl shadow-sm',
+                cancelButton: 'px-4 py-2.5 text-xs font-semibold rounded-xl'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+
+    /**
+     * Helper Function: Mengubah Style Badge Select Tahapan Pelatihan
+     */
+    function updateTahapanStyle(select, tahapan) {
+        const colorClasses = [
+            'bg-amber-50', 'text-amber-700', 'border-amber-100', 'border-amber-200',
+            'bg-sky-50', 'text-sky-700', 'border-sky-100', 'border-sky-200',
+            'bg-emerald-50', 'text-emerald-700', 'border-emerald-100', 'border-emerald-200'
+        ];
+        select.classList.remove(...colorClasses);
+
+        const styleMap = {
+            'Persiapan': ['bg-amber-50', 'text-amber-700', 'border-amber-200'],
+            'Pelaksanaan': ['bg-sky-50', 'text-sky-700', 'border-sky-200'],
+            'Evaluasi': ['bg-emerald-50', 'text-emerald-700', 'border-emerald-200']
+        };
+
+        if (styleMap[tahapan]) {
+            select.classList.add(...styleMap[tahapan]);
         }
+    }
 
+    /**
+     * Helper Function: Pop-up Toast Alert Interaktif (SweetAlert2)
+     */
+    function showToast(message, iconType = 'success') {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            },
+            customClass: {
+                popup: 'rounded-2xl shadow-xl border border-slate-100 bg-white p-3.5 font-sans',
+                title: 'text-xs font-bold text-slate-800'
+            }
+        });
 
-        function showToast(message) {
-
-            document.querySelector('.custom-toast')?.remove();
-
-            const toast = document.createElement('div');
-
-            toast.className = 'custom-toast fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg z-50 flex items-center gap-2';
-
-            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>${message}`;
-
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 2200);
-
-        }
-    </script>
+        Toast.fire({
+            icon: iconType,
+            title: message,
+            iconColor: iconType === 'success' ? '#10b981' : '#f43f5e'
+        });
+    }
+</script>
 
 @endsection

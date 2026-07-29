@@ -3,39 +3,39 @@
 @section('title', 'Kelola Akun')
 
 @section('content')
+<div class="p-6 space-y-6 max-w-7xl mx-auto pb-12">
 
-<div class="space-y-6 pb-12">
-
-    {{-- 1. Header & Quick Action Card --}}
-    <div class="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm relative overflow-hidden">
-        {{-- Accent Background Gradient Blur --}}
+    {{-- 1. Header & Quick Action --}}
+    <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+        {{-- Accent Background Blur --}}
         <div class="absolute -right-10 -top-10 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none"></div>
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold rounded-lg text-[10px] tracking-wide inline-block">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span>
+                    <span class="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold rounded-md text-[10px] uppercase tracking-wider">
                         User Management
                     </span>
                 </div>
-                <h1 class="text-2xl font-black text-slate-800 tracking-tight">
-                    Kelola <span class="text-indigo-600">Akun</span>
+                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
+                    Kelola <span class="text-indigo-600">Akun Admin</span>
                 </h1>
-                <p class="text-xs text-slate-500 font-medium">
-                    Daftar seluruh administrator dan hak akses pengguna sistem PRO-BOOK.
+                <p class="text-xs text-slate-400 font-medium mt-1">
+                    Daftar seluruh administrator dan hak akses pengguna sistem SIMPRO
                 </p>
             </div>
 
             <a href="{{ route('users.create') }}"
-               class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all duration-200 active:scale-95 shrink-0">
-                <i class="fa-solid fa-plus text-[10px]"></i>
+                class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all duration-200 active:scale-95 shrink-0">
+                <i class="fa-solid fa-plus text-xs"></i>
                 <span>Tambah Admin</span>
             </a>
         </div>
     </div>
 
     {{-- 2. Toolbar Pencarian & Filter --}}
-    <div class="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
+    <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
         <form method="GET" action="{{ route('users.index') }}">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="w-full sm:w-80 relative">
@@ -43,21 +43,21 @@
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..."
-                           class="w-full pl-9 pr-4 py-2 bg-slate-50/60 border border-slate-200/80 text-slate-700 text-xs font-semibold rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400">
+                        class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-800 text-xs font-medium rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all placeholder:text-slate-400">
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <button type="submit"
-                            class="flex-1 sm:flex-none px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95">
-                        <i class="fa-solid fa-filter text-[10px]"></i>
+                        class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-95">
+                        <i class="fa-solid fa-filter text-xs"></i>
                         <span>Cari</span>
                     </button>
 
                     @if(request('search'))
                         <a href="{{ route('users.index') }}" 
-                           class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition-all duration-200 flex items-center justify-center border border-slate-200/60 active:scale-95"
-                           title="Reset Pencarian">
-                            <i class="fa-solid fa-rotate-left text-[11px]"></i>
+                            class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-xl transition-all duration-200 flex items-center justify-center border border-slate-200 active:scale-95"
+                            title="Reset Pencarian">
+                            <i class="fa-solid fa-rotate-left text-xs"></i>
                         </a>
                     @endif
                 </div>
@@ -66,7 +66,7 @@
     </div>
 
     {{-- 3. Tabel Administrator --}}
-    <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -84,7 +84,7 @@
                             {{-- Nama & Avatar Initial --}}
                             <td class="py-4 px-6 align-middle">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 font-black text-xs flex items-center justify-center uppercase shrink-0 shadow-2xs">
+                                    <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center uppercase shrink-0 shadow-2xs">
                                         {{ substr($user->name, 0, 1) }}
                                     </div>
                                     <div class="flex flex-col">
@@ -92,14 +92,14 @@
                                             {{ $user->name }}
                                         </span>
                                         @if(auth()->id() == $user->id)
-                                            <span class="text-[10px] text-indigo-600 font-bold">(Akun Anda)</span>
+                                            <span class="text-[10px] text-indigo-600 font-bold mt-0.5">(Akun Anda)</span>
                                         @endif
                                     </div>
                                 </div>
                             </td>
 
                             {{-- Email --}}
-                            <td class="py-4 px-6 text-slate-500 font-semibold align-middle">
+                            <td class="py-4 px-6 text-slate-500 font-medium align-middle">
                                 {{ $user->email }}
                             </td>
 
@@ -123,18 +123,18 @@
                                 <div class="flex items-center justify-center gap-1.5">
                                     {{-- Edit --}}
                                     <a href="{{ route('users.edit', $user) }}" 
-                                       class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all shadow-2xs" 
+                                       class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all duration-200 shadow-2xs" 
                                        title="Edit Data">
                                         <i class="fa-solid fa-pen-to-square text-xs"></i>
                                     </a>
 
                                     {{-- Reset Password --}}
-                                    <form action="{{ route('users.reset-password', $user) }}" method="POST" class="inline">
+                                    <form id="reset-form-{{ $user->id }}" action="{{ route('users.reset-password', $user) }}" method="POST" class="inline">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" 
-                                                onclick="return confirm('Reset password akun ini menjadi admin123?')" 
-                                                class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-500 hover:text-white flex items-center justify-center transition-all shadow-2xs" 
+                                        <button type="button" 
+                                                onclick="confirmReset('reset-form-{{ $user->id }}', '{{ $user->name }}')" 
+                                                class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-500 hover:text-white flex items-center justify-center transition-all duration-200 shadow-2xs" 
                                                 title="Reset Password">
                                             <i class="fa-solid fa-key text-xs"></i>
                                         </button>
@@ -142,18 +142,17 @@
 
                                     {{-- Delete --}}
                                     @if(auth()->id() != $user->id)
-                                        <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?')">
+                                        <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" 
-                                                    class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all shadow-2xs" 
+                                            <button type="button" 
+                                                    onclick="confirmDelete('delete-form-{{ $user->id }}', '{{ $user->name }}')" 
+                                                    class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all duration-200 shadow-2xs" 
                                                     title="Hapus Akun">
                                                 <i class="fa-solid fa-trash text-xs"></i>
                                             </button>
                                         </form>
                                     @else
-                                        {{-- Spacer pembantu agar alignment tetap rata --}}
                                         <div class="w-8 h-8"></div>
                                     @endif
                                 </div>
@@ -187,6 +186,88 @@
 
 </div>
 
+{{-- Library SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // 1. Toast Notification untuk Flash Message (Sukses)
+    @if(session('success'))
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            },
+            customClass: {
+                popup: 'rounded-2xl shadow-xl border border-slate-100 bg-white p-4 font-sans',
+                title: 'text-xs font-bold text-slate-800'
+            }
+        });
+
+        Toast.fire({
+            icon: 'success',
+            title: "{{ session('success') }}",
+            iconColor: '#10b981'
+        });
+    @endif
+
+    // 2. SweetAlert Modal Konfirmasi Reset Password
+    function confirmReset(formId, name) {
+        Swal.fire({
+            title: 'Reset Password?',
+            text: `Password untuk "${name}" akan diubah kembali menjadi default: admin123`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5', // Indigo-600
+            cancelButtonColor: '#94a3b8',  // Slate-400
+            confirmButtonText: '<i class="fa-solid fa-key text-xs mr-1"></i> Ya, Reset Password',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-2xl p-6 font-sans',
+                title: 'text-lg font-bold text-slate-800',
+                htmlContainer: 'text-xs text-slate-500 mt-2',
+                confirmButton: 'px-4 py-2.5 text-xs font-semibold rounded-xl shadow-sm',
+                cancelButton: 'px-4 py-2.5 text-xs font-semibold rounded-xl'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+
+    // 3. SweetAlert Modal Konfirmasi Hapus Akun
+    function confirmDelete(formId, name) {
+        Swal.fire({
+            title: 'Hapus Akun Admin?',
+            text: `Akun "${name}" akan dihapus permanen dari sistem SIMPRO.`,
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48', // Rose-600
+            cancelButtonColor: '#94a3b8',  // Slate-400
+            confirmButtonText: '<i class="fa-solid fa-trash text-xs mr-1"></i> Ya, Hapus Akun',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-2xl p-6 font-sans',
+                title: 'text-lg font-bold text-slate-800',
+                htmlContainer: 'text-xs text-slate-500 mt-2',
+                confirmButton: 'px-4 py-2.5 text-xs font-semibold rounded-xl shadow-sm',
+                cancelButton: 'px-4 py-2.5 text-xs font-semibold rounded-xl'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
+
 <style>
     .custom-scrollbar::-webkit-scrollbar {
         height: 5px;
@@ -203,5 +284,4 @@
         background: #cbd5e1;
     }
 </style>
-
 @endsection

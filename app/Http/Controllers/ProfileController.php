@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
-use App\Services\ActivityLogger;
 
 class ProfileController extends Controller
 {
@@ -61,14 +60,6 @@ class ProfileController extends Controller
 
         $user->save();
 
-        ActivityLogger::log(
-            'Profil',
-            'Edit',
-            $user->id,
-            'Mengubah profil akun "' . $user->name . '"',
-            $old,
-            $user->fresh()->toArray()
-        );
 
         return redirect()
             ->route('profile')
@@ -106,15 +97,6 @@ class ProfileController extends Controller
         $request->user()->update([
             'password' => Hash::make($request->password),
         ]);
-
-        ActivityLogger::log(
-            'Profil',
-            'Ubah Password',
-            $request->user()->id,
-            'Mengubah password akun "' . $request->user()->name . '"',
-            [],
-            []
-        );
 
         return back()->with('success_password', 'Password berhasil diperbarui.');
     }

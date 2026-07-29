@@ -17,38 +17,69 @@ class PelatihanController extends Controller
     */
 
     public function index(Request $request)
-    {
-        $query = Pelatihan::with('uraians');
+{
+    $query = Pelatihan::with('uraians');
 
-        if ($request->filled('search')) {
-            $query->where('nama_pelatihan', 'like', '%' . $request->search . '%');
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | Search
+    |--------------------------------------------------------------------------
+    */
 
-        if ($request->filled('tahapan')) {
-            $query->where('tahapan', $request->tahapan);
-        }
+    if ($request->filled('search')) {
+        $query->where('nama_pelatihan', 'like', '%' . $request->search . '%');
+    }
 
-        $pelatihans = $query->latest()->get();
+    /*
+    |--------------------------------------------------------------------------
+    | Filter Tahapan
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->filled('tahapan')) {
+        $query->where('tahapan', $request->tahapan);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination
+    |--------------------------------------------------------------------------
+    */
+
+    $pelatihans = $query
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hitung Progress
+    |--------------------------------------------------------------------------
+    */
+
+    foreach ($pelatihans as $pelatihan) {
+        $this->hitungProgress($pelatihan);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Favorit User
+    |--------------------------------------------------------------------------
+    */
+
+    if (Auth::check()) {
+
+        $favoriteIds = Favorite::where('user_id', Auth::id())
+            ->pluck('pelatihan_id');
 
         foreach ($pelatihans as $pelatihan) {
-            $this->hitungProgress($pelatihan);
+            $pelatihan->favorit = $favoriteIds->contains($pelatihan->id);
         }
 
-        if (Auth::check()) {
-
-            $favoriteIds = Favorite::where('user_id', Auth::id())
-                ->pluck('pelatihan_id');
-
-            foreach ($pelatihans as $pelatihan) {
-
-                $pelatihan->favorit = $favoriteIds->contains($pelatihan->id);
-
-            }
-
-        }
-
-        return view('pelatihans.index', compact('pelatihans'));
     }
+
+    return view('pelatihans.index', compact('pelatihans'));
+}
 
     public function show(Request $request, Pelatihan $pelatihan)
     {

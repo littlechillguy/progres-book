@@ -49,7 +49,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-slate-50/80 rounded-2xl p-5 border border-slate-200/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Pelatihan</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Pelatihan Tahun {{ $tahun }}</p>
                     <h2 class="text-3xl font-black text-slate-800 tracking-tight mt-1">{{ $pelatihans->count() }}</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -66,7 +66,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-sky-50/60 rounded-2xl p-5 border border-sky-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-sky-600/80 uppercase tracking-wider"> Uraian Kegiatan </p>
+                    <p class="text-[11px] font-bold text-sky-600/80 uppercase tracking-wider">Total Uraian Tahun {{ $tahun }}</p>
                     <h2 class="text-3xl font-black text-sky-900 tracking-tight mt-1">{{ $totalKegiatanGlobal }}</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-sky-100/80 text-sky-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -83,7 +83,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-emerald-50/60 rounded-2xl p-5 border border-emerald-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider">Uraian Kegiatan Selesai</p>
+                    <p class="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider">Uraian Selesai Tahun {{ $tahun }}</p>
                     <h2 class="text-3xl font-black text-emerald-900 tracking-tight mt-1">{{ $totalSelesaiGlobal }}</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -100,7 +100,7 @@
         <div class="group bg-gradient-to-br from-white via-white to-violet-50/60 rounded-2xl p-5 border border-violet-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-bold text-violet-600/80 uppercase tracking-wider">Progress Global</p>
+                    <p class="text-[11px] font-bold text-violet-600/80 uppercase tracking-wider">Progress Pelaksanaan Tahun {{ $tahun }}</p>
                     <h2 class="text-3xl font-black text-violet-900 tracking-tight mt-1">{{ $persenGlobal }}%</h2>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-violet-100/80 text-violet-600 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -122,7 +122,7 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm flex flex-col justify-between">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-slate-800 text-sm">Uraian Kegiatan</h3>
+                    <h3 class="font-bold text-slate-800 text-sm">Statistik Uraian Kegiatan</h3>
                     <p class="text-[11px] text-slate-400 mt-0.5">Distribusi pengerjaan kegiatan</p>
                 </div>
                 <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
@@ -182,58 +182,64 @@
 
         {{-- Ringkasan Tahunan --}}
         <div class="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-3">
-                <div>
-                    <h3 class="font-bold text-slate-800 text-sm">Ringkasan {{ $tahun }}</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Pencapaian kinerja tahunan</p>
-                </div>
-               <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xs">
-    <i class="fa-solid fa-folder-open"></i>
-</span>
-</div>
 
-<div class="space-y-2.5 flex-1 flex flex-col justify-center">
+    <div class="flex items-center justify-between mb-3">
+        <div>
+            <h3 class="font-bold text-slate-800 text-sm">
+                Ringkasan {{ $tahun }}
+            </h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+                Ringkasan pelaksanaan pelatihan tahun {{ $tahun }}
+            </p>
+        </div>
 
-   {{-- Soft Emerald Card --}}
-<div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100/80 flex items-center justify-between hover:border-emerald-200 transition-colors">
-    <span class="text-xs font-semibold text-emerald-800">
-        Total Selesai
-    </span>
-
-    <span class="text-sm font-black text-emerald-600">
-        {{ $totalSelesaiTahun }}
-        <span class="text-[10px] font-medium text-emerald-700/80">
-            Kegiatan
+        <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-folder-open"></i>
         </span>
-    </span>
-</div>
+    </div>
 
-{{-- Soft Sky Card --}}
-<div class="p-3.5 rounded-xl bg-sky-50/70 border border-sky-100/80 flex items-center justify-between hover:border-sky-200 transition-colors">
-    <span class="text-xs font-semibold text-sky-800">
-        Rata-rata / Bulan
-    </span>
+    <div class="space-y-2.5 flex-1 flex flex-col justify-center">
 
-    <span class="text-sm font-black text-sky-600">
-        {{ $rataPerBulan }}
-        <span class="text-[10px] font-medium text-sky-700/80">
-            Kegiatan
-        </span>
-    </span>
-</div>
+        {{-- Pelatihan Selesai --}}
+        <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100/80 flex items-center justify-between hover:border-emerald-200 transition-colors">
+            <span class="text-xs font-semibold text-emerald-800">
+                Pelatihan Selesai
+            </span>
 
-{{-- Soft Amber Card --}}
-<div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-100/80 flex items-center justify-between hover:border-amber-200 transition-colors">
-    <span class="text-xs font-semibold text-amber-800">
-        Bulan Terbaik
-    </span>
+            <span class="text-sm font-black text-emerald-600">
+                {{ $totalSelesaiTahun }}
+                <span class="text-[10px] font-medium text-emerald-700/80">
+                    Pelatihan
+                </span>
+            </span>
+        </div>
 
-    <span class="text-sm font-black text-amber-600">
-        {{ $bulanTerbaik }}
-    </span>
-</div>
+        {{-- Total Pelatihan --}}
+        <div class="p-3.5 rounded-xl bg-sky-50/70 border border-sky-100/80 flex items-center justify-between hover:border-sky-200 transition-colors">
+            <span class="text-xs font-semibold text-sky-800">
+                Total Pelatihan
+            </span>
 
-</div>
+            <span class="text-sm font-black text-sky-600">
+                {{ $pelatihans->count() }}
+                <span class="text-[10px] font-medium text-sky-700/80">
+                    Pelatihan
+                </span>
+            </span>
+        </div>
+
+        {{-- Pelatihan Terbaik --}}
+        <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-100/80 flex items-center justify-between hover:border-amber-200 transition-colors">
+            <span class="text-xs font-semibold text-amber-800">
+                Pelatihan Terbaik
+            </span>
+
+            <span class="text-sm font-black text-amber-600 truncate ml-3 text-right">
+                {{ $namaPelatihanTerbaik }}
+            </span>
+        </div>
+
+    </div>
 
 </div>
 

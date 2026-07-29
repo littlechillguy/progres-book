@@ -11,45 +11,45 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Tahun Grafik
-        |--------------------------------------------------------------------------
-        */
-
         $tahun = $request->tahun ?? now()->year;
 
         /*
         |--------------------------------------------------------------------------
-        | Data Pelatihan
+        | Pelatihan Tahun Dipilih
         |--------------------------------------------------------------------------
         */
 
-        $pelatihansRaw = Pelatihan::with('uraians')->get();
+        $pelatihansRaw = Pelatihan::with([
+            'uraians' => function ($q) use ($tahun) {
+                $q->whereYear('tanggal', $tahun);
+            }
+        ])
+            ->whereHas('uraians', function ($q) use ($tahun) {
+                $q->whereYear('tanggal', $tahun);
+            })
+            ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Statistik Global
-        |--------------------------------------------------------------------------
-        */
+        $totalPelatihan = $pelatihansRaw->count();
 
         $totalKegiatanGlobal = 0;
         $totalSelesaiGlobal = 0;
         $pelatihanTerlaksana = 0;
 
-        $pelatihans = $pelatihansRaw->map(function ($pelatihan) use (&$totalKegiatanGlobal, &$totalSelesaiGlobal, &$pelatihanTerlaksana) {
+        $pelatihans = $pelatihansRaw->map(function ($pelatihan) use (&$totalKegiatanGlobal, &$totalSelesaiGlobal, &$pelatihanTerlaksana, $tahun) {
 
-            $total = $pelatihan->uraians->count();
+            $uraians = $pelatihan->uraians;
 
-            $selesai = $pelatihan->uraians
+            $total = $uraians->count();
+
+            $selesai = $uraians
                 ->where('progres', 'selesai')
                 ->count();
 
-            $onProgress = $pelatihan->uraians
+            $onProgress = $uraians
                 ->where('progres', 'on progress')
                 ->count();
 
-            $belum = $pelatihan->uraians
+            $belum = $uraians
                 ->where('progres', 'belum')
                 ->count();
 
@@ -60,7 +60,7 @@ class DashboardController extends Controller
             $totalKegiatanGlobal += $total;
             $totalSelesaiGlobal += $selesai;
 
-            if ($total > 0 && $selesai == $total) {
+            if ($persen == 100) {
                 $pelatihanTerlaksana++;
             }
 
@@ -88,17 +88,17 @@ class DashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Progress Global
+        | Progress Global Tahun Dipilih
         |--------------------------------------------------------------------------
         */
-$persenGlobal = $totalKegiatanGlobal > 0
-    ? round(($totalSelesaiGlobal / $totalKegiatanGlobal) * 100, 1)
-    : 0;
 
+        $persenGlobal = $totalKegiatanGlobal > 0
+            ? round(($totalSelesaiGlobal / $totalKegiatanGlobal) * 100, 1)
+            : 0;
 
         /*
         |--------------------------------------------------------------------------
-        | Grafik Penyelesaian per Bulan
+        | Grafik Bulanan
         |--------------------------------------------------------------------------
         */
 
@@ -109,8 +109,18 @@ $persenGlobal = $totalKegiatanGlobal > 0
             ->pluck('total', 'bulan');
 
         $chartLabels = [
-            'Jan','Feb','Mar','Apr','Mei','Jun',
-            'Jul','Agu','Sep','Okt','Nov','Des'
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Mei',
+            'Jun',
+            'Jul',
+            'Agu',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Des'
         ];
 
         $chartData = [];
@@ -120,45 +130,59 @@ $persenGlobal = $totalKegiatanGlobal > 0
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Statistik Grafik
-        |--------------------------------------------------------------------------
-        */
+|--------------------------------------------------------------------------
+| Ringkasan Tahunan (Berdasarkan Pelatihan)
+|--------------------------------------------------------------------------
+*/
 
-        $totalSelesaiTahun = array_sum($chartData);
+        $totalSelesaiTahun = $pelatihans
+            ->where('persen', 100)
+            ->count();
 
-        $rataPerBulan = round($totalSelesaiTahun / 12, 1);
+        $rataPerBulan = round(
+            $pelatihans->avg('persen'),
+            1
+        );
 
-        $nilaiTertinggi = max($chartData);
+        $pelatihanTerbaik = $pelatihans
+            ->sortByDesc('persen')
+            ->first();
 
-        $bulanTerbaik = '-';
-
-        if ($nilaiTertinggi > 0) {
-            $bulanTerbaik = $chartLabels[array_search($nilaiTertinggi, $chartData)];
-        }
+        $namaPelatihanTerbaik = $pelatihanTerbaik
+            ? $pelatihanTerbaik->nama_pelatihan
+            : '-';
 
         /*
         |--------------------------------------------------------------------------
-        | Donut Chart
+        | Donut Chart Tahun Dipilih
         |--------------------------------------------------------------------------
         */
 
         $statusChart = [
-            'belum' => Uraian::where('progres', 'belum')->count(),
-            'progress' => Uraian::where('progres', 'on progress')->count(),
-            'selesai' => Uraian::where('progres', 'selesai')->count(),
+
+            'belum' => Uraian::whereYear('tanggal', $tahun)
+                ->where('progres', 'belum')
+                ->count(),
+
+            'progress' => Uraian::whereYear('tanggal', $tahun)
+                ->where('progres', 'on progress')
+                ->count(),
+
+            'selesai' => Uraian::whereYear('tanggal', $tahun)
+                ->where('progres', 'selesai')
+                ->count(),
         ];
 
-                /*
-            |--------------------------------------------------------------------------
-            | 5 Pelatihan Prioritas
-            |--------------------------------------------------------------------------
-            */
+        /*
+        |--------------------------------------------------------------------------
+        | Bottom 5 Progress
+        |--------------------------------------------------------------------------
+        */
 
-            $topPelatihan = $pelatihans
-                ->sortBy('persen')
-                ->take(5)
-                ->values();
+        $topPelatihan = $pelatihans
+            ->sortBy('persen')
+            ->take(5)
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -167,33 +191,26 @@ $persenGlobal = $totalKegiatanGlobal > 0
         */
 
         $activities = ActivityLog::with('user')
-    ->latest()
-    ->take(5)
-    ->get();
+            ->latest()
+            ->take(5)
+            ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Return View
-        |--------------------------------------------------------------------------
-        */
-return view('dashboard', compact(
-    'pelatihans',
-    'totalKegiatanGlobal',
-    'totalSelesaiGlobal',
-    'persenGlobal',
-    'pelatihanTerlaksana',
-
-    'tahun',
-    'chartLabels',
-    'chartData',
-    'totalSelesaiTahun',
-    'rataPerBulan',
-    'bulanTerbaik',
-
-    'statusChart',
-    'topPelatihan',
-
-    'activities'
-));
+        return view('dashboard', compact(
+            'pelatihans',
+            'totalPelatihan',
+            'totalKegiatanGlobal',
+            'totalSelesaiGlobal',
+            'pelatihanTerlaksana',
+            'persenGlobal',
+            'tahun',
+            'chartLabels',
+            'chartData',
+            'totalSelesaiTahun',
+            'rataPerBulan',
+            'namaPelatihanTerbaik',
+            'statusChart',
+            'topPelatihan',
+            'activities'
+        ));
     }
 }
